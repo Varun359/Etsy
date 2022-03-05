@@ -1,10 +1,11 @@
 import React,{useState} from 'react'
+import axios from 'axios'
 
 const Register = ()=> {
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
     const [firstName,setFirstName] = useState('');
-
+    const [created , setCreated] = useState(null);
     const emailChangeHandler = (e) => {
         setEmail(e.target.value) 
     }
@@ -17,9 +18,29 @@ const Register = ()=> {
         setFirstName(e.target.value)
     }
     
+    const onSubmitHandler = (e) => {
+        const data={
+        email: email,
+        firstName : firstName,
+        password : password
+       }
+       e.preventDefault();
+       axios.defaults.withCredentials =true;
+       axios.post('http://localhost:3001/create',data)
+            .then(response=>{
+               console.log(response)
+               setEmail("")
+               setPassword("")
+               setFirstName("")
+               setCreated(true)
+            })
+            .catch(err =>{
+                setCreated(false)
+                console.log(err)
+            })
+    }
     return (
      <div class="container">
-           {console.log(email,' ',password)}
                  
                  <div class="login-form">
                      <div class="main-div">
@@ -29,16 +50,20 @@ const Register = ()=> {
                              {/* {this.state.invalidCredentials && <p>Invalid Credentials</p>} */}
                          </div>
                          
+                         <form onSubmit={onSubmitHandler}> 
                              <div class="form-group">
-                                 <input onChange={emailChangeHandler} value={email} type="text" class="form-control" name="email" placeholder="email"/>
+                                 <input required onChange={emailChangeHandler} value={email} type="email" class="form-control" name="email" placeholder="email"/>
                              </div>
                              <div class="form-group">
-                                 <input onChange={firstNameChangeHandler} value={firstName} type="text" class="form-control" name="FirstName" placeholder="First Name"/>
+                                 <input required onChange={firstNameChangeHandler} value={firstName} type="text" class="form-control" name="FirstName" placeholder="First Name"/>
                              </div>
                              <div class="form-group">
-                                 <input onChange={passwordChangeHandler} value={password} type="password" class="form-control" name="password" placeholder="Password"/>
+                                 <input required onChange={passwordChangeHandler} value={password} type="password" class="form-control" name="password" placeholder="Password"/>
                              </div>
-                             <button class="btn btn-primary">Login</button>                 
+                             <button type="submit" class="btn btn-primary">Login</button>   
+                         </form>   
+                         {created && <p style={{color:'green'}}> Successfully Registered</p> }  
+                         {created===false && <p style={{color:"red"}}>Errror while registering</p>}          
                      </div>
                  </div>
              </div>

@@ -4,7 +4,9 @@ const { addListener } = require("./database");
 //const { createConnection } = require("net");
 var connection = require('./database')
 var app = express();
+var cors = require("cors");
 
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 var bodyParser = require("body-parser");
 
 /*app.get('/',(req,res) => {
