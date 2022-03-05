@@ -23,7 +23,7 @@ const Login = () => {
                             <p>Please enter your username and password</p>
                             {/* {this.state.invalidCredentials && <p>Invalid Credentials</p>} */}
                         </div>
-                        
+                         
                             <div class="form-group">
                                 <input onChange={emailChangeHandler} value={email} type="text" class="form-control" name="email" placeholder="email"/>
                             </div>

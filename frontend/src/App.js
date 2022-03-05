@@ -1,15 +1,14 @@
 import React from 'react'
-import Login from './components/Login'
-import Register from './components/Register'
 import './App.css'
+import {BrowserRouter} from 'react-router-dom';
+import Main from "./components/Main"
 const App = () => {
   return (
+   <BrowserRouter>
     <div>
-       <div> <Login></Login></div>
-        <div> <Register></Register></div>
+      <Main/>
     </div>
-
-
+  </BrowserRouter>
   )
 }
 
