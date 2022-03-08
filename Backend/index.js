@@ -3,7 +3,7 @@ var mysql = require("mysql");
 const { addListener } = require("./database");
 //const { createConnection } = require("net");
 var session = require("express-session");
-var connection = require('./database')
+var connection = require("./database");
 var app = express();
 var cors = require("cors");
 
@@ -19,7 +19,6 @@ app.use(
   })
 );
 
-
 var bodyParser = require("body-parser");
 
 /*app.get('/',(req,res) => {
@@ -31,15 +30,15 @@ var bodyParser = require("body-parser");
 });*/
 app.use(bodyParser.json());
 
-app.use('/',require('./routes/authentication'));
+app.use("/", require("./routes/authentication"));
+app.use("/", require("./routes/registerRoute"));
+app.use("/", require("./routes/loginRoute"));
+app.use("/", require("./routes/userProfileRoute"));
 
-
-app.listen(3001, () =>{
-  console.log('App listening on port 3001');
-  connection.connect(function(err){
-      if(err)
-       throw err;
-      console.log("database connected")
-  })
-})
-
+app.listen(3001, () => {
+  console.log("App listening on port 3001");
+  connection.connect(function (err) {
+    if (err) throw err;
+    console.log("database connected");
+  });
+});

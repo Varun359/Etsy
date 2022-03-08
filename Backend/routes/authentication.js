@@ -4,16 +4,14 @@ var connection = require("../database");
 
 const router = express.Router();
 
-
 router.get("/", (req, res) => {
   console.log("hello");
   res.send("hello");
 });
 
-
 //insert into etsy.users (email,first_name,password) values ('varunyedulla@gmail.com','Varun Reddy','password')
 
-router.post("/create", (req, res) => {
+/*router.post("/create", (req, res) => {
   console.log("inside create");
   var createSql =
     "insert into etsy.users (email,first_name,password) values (" +
@@ -81,5 +79,6 @@ router.post("/login", (req, res) => {
   });
   console.log(req.body);
 });
+*/
 
 module.exports = router;

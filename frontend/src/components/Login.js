@@ -48,7 +48,7 @@ const Login = () => {
             <h2>Login</h2>
             <p>Please enter your username and password</p>
             {inValidCredentials && (
-              <p style={{ colr: "red" }}>Invalid Email or Password</p>
+              <p style={{ color: "red" }}>Invalid Email or Password</p>
             )}
           </div>
           <form onSubmit={loginHandler}>
