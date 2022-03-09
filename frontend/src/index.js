@@ -1,5 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import App from './App'
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+// import rootReducer from "./reducers/index";
+// import { createStore } from "redux";
+// import { provider } from "react-redux";
+// import { composeWithDevTools } from "redux-devtools-extension";
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+// //store
+// const store = createStore(rootReducer, composeWithDevTools());
+
+ReactDOM.render(<App />, document.getElementById("root"));

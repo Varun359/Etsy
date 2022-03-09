@@ -3,9 +3,11 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
 import Home from "./Home";
+import Header from "./Header";
 const Main = () => {
   return (
     <div>
+      <Header />
       <Routes>
         {/*Render Different Component based on Route*/}
         <Route path="/" element={<Login></Login>} />
