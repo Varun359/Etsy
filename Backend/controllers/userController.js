@@ -19,13 +19,17 @@ exports.registerUser = asyncErrorHandler(async (req, res) => {
     // console.log(salt);
     // console.log(hashedPassword);
 
+    const { email, firstName, password } = req.body;
+
+    // validate, if user already exists (409 http)
+
     var createSql =
       "insert into etsy.users (email,first_name,password) values (" +
-      mysql.escape(req.body.email) +
+      mysql.escape(email) +
       " ," +
-      mysql.escape(req.body.firstName) +
+      mysql.escape(firstName) +
       " ," +
-      mysql.escape(req.body.password) +
+      mysql.escape(password) +
       " ) ";
 
     connection.query(createSql, (err, result) => {
@@ -37,10 +41,24 @@ exports.registerUser = asyncErrorHandler(async (req, res) => {
         res.end("Error while creating user");
         console.log(err);
       } else {
-        res.writeHead(200, {
-          "Content-Type": "text/plain",
-        });
-        res.end("User Registered Succesfully");
+        // res.writeHead(200, {
+        //   "Content-Type": "text/plain",
+        // });
+        console.log(result);
+        const token = jwt.sign(
+          { user_id: result.insertId, email },
+          "secret123",
+          { expiresIn: "1hr" }
+        );
+        const user = {
+          token: token,
+          user_id: result.insertId,
+          email: email,
+        };
+        res.user = user;
+        console.log(res);
+        res.send(user);
+        //res.end("User Registered Succesfully");
       }
     });
     console.log(req.body);
@@ -100,20 +118,31 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
         console.log("user ", req.session);
         req.session.user = req.body.email;
 
-        res.writeHead(200, {
-          "Content-Type": "text/plain",
-        });
-        const user = result[0];
-        jwt.sign({ user }, "secret123", { expiresIn: "1h" }, (err, token) => {
-          if (err) {
-            console.log(err);
+        // res.writeHead(200, {
+        //   "Content-Type": "text/plain",
+        // });
+        const email = result[0].email;
+        const user_id = result[0].user_id;
+        const user = {
+          user_id: result[0].user_id,
+          email: result[0].email,
+          password: result[0].password,
+        };
+        jwt.sign(
+          { user_id: email, user_id },
+          "secret123",
+          { expiresIn: "1h" },
+          (err, token) => {
+            if (err) {
+              console.log(err);
+            }
+            console.log("I am in token");
+            console.log(token);
+            user.token = token;
+            res.send(user);
           }
-          console.log("I am in token");
-          console.log(token);
-
-          res.send(token);
-        });
-        res.end("Succesfully logged in");
+        );
+        // res.end("Succesfully logged in");
       } else {
         res.status(403).json("Incorrect email or password");
         res.end();
@@ -127,62 +156,138 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
   // }
 });
 
+// Get User Details
+exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
+  var getUserSql =
+    "select * from etsy.users where user_id=" + mysql.escape(req.user.user_id);
+
+  console.log(getUserSql);
+  connection.query(getUserSql, (err, result) => {
+    if (err) {
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+      res.send({
+        name: result[0].first_name,
+        email: result[0].email,
+        id: result[0].user_id,
+      });
+    }
+  });
+});
+
+exports.checkToken = asyncErrorHandler(async (req, res, next) => {
+  try {
+    const token = req.header("auth-token");
+    if (!token) {
+      return res.json(false);
+    }
+
+    const verified = jwt.verify(token, "secret123");
+    if (!verified) {
+      return res.send(false);
+    }
+
+    console.log(req.user);
+    var getUserId =
+      "select * from etsy.users where user_id=" +
+      mysql.escape(req.user.user_id);
+
+    connection.query(getUserId, (err, result) => {
+      if (!result) {
+        return res.send(false);
+      }
+      return res.send(true);
+    });
+  } catch (err) {
+    res.status(500).send({ msg: "Hi", err });
+  }
+});
+
 // Logout User
-// exports.logoutUser = asyncErrorHandler(async (req, res, next) => {
-//   res.cookie("token", null, {
-//     expires: new Date(Date.now()),
-//     httpOnly: true,
-//   });
+exports.logoutUser = asyncErrorHandler(async (req, res, next) => {
+  res.cookie("auth-token", null, {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+  });
 
-//   res.status(200).json({
-//     success: true,
-//     message: "Logged Out",
-//   });
-// });
+  res.status(200).json({
+    success: true,
+    message: "Logged Out",
+  });
+});
 
-// // Get User Details
-// exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
-//   const user = await User.findById(req.user.id);
+// Update User Profile ( should also show user profile)
+exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
+  console.log("hi");
+  const getDetailsSql =
+    "select first_name,gender,city,phone_no,address,country from etsy.users where user_id=" +
+    mysql.escape(req.user.user_id);
+  console.log(getDetailsSql);
+  connection.query(getDetailsSql, (err, result) => {
+    if (err) {
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+      console.log("hi");
+    }
+  });
 
-//   res.status(200).json({
-//     success: true,
-//     user,
-//   });
-// });
+  const name = req.body.first_name;
+  const gender = req.body.gender;
+  const city = req.body.city;
+  const phone_no = req.body.phone_no;
+  const address = req.body.address;
+  const country = req.body.country;
 
-// // Update User Profile
-// exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
-//   const newUserData = {
-//     name: req.body.name,
-//     email: req.body.email,
-//   };
+  var UpdateUserSql =
+    "update etsy.users set first_name = " +
+    mysql.escape(name) +
+    ", city = " +
+    mysql.escape(city) +
+    ", gender = " +
+    mysql.escape(gender) +
+    ", phone_no = " +
+    mysql.escape(phone_no) +
+    ", address = " +
+    mysql.escape(address) +
+    ", country=" +
+    mysql.escape(country) +
+    " where user_id = " +
+    mysql.escape(req.user.user_id);
 
-//   if (req.body.avatar !== "") {
-//     const user = await User.findById(req.user.id);
+  connection.query(UpdateUserSql, (err, result) => {
+    if (err) {
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+    }
+  });
+  res.status(200).json({
+    success: true,
+  });
+  // if (req.body.avatar !== "") {
+  //   const user = await User.findById(req.user.id);
 
-//     const imageId = user.avatar.public_id;
+  //   const imageId = user.avatar.public_id;
 
-//     await cloudinary.v2.uploader.destroy(imageId);
+  //   await cloudinary.v2.uploader.destroy(imageId);
 
-//     const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-//       folder: "avatars",
-//       width: 150,
-//       crop: "scale",
-//     });
+  //   const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+  //     folder: "avatars",
+  //     width: 150,
+  //     crop: "scale",
+  //   });
 
-//     newUserData.avatar = {
-//       public_id: myCloud.public_id,
-//       url: myCloud.secure_url,
-//     };
-//   }
+  //   newUserData.avatar = {
+  //     public_id: myCloud.public_id,
+  //     url: myCloud.secure_url,
+  //   };
+  // }
 
-//   await User.findByIdAndUpdate(req.user.id, newUserData, {
-//     new: true,
-//     runValidators: true,
-//     useFindAndModify: true,
-//   });
-
-//   res.status(200).json({
-//     success: true,
-//   });
-// });
+  // await User.findByIdAndUpdate(req.user.id, newUserData, {
+  //   new: true,
+  //   runValidators: true,
+  //   useFindAndModify: true,
+  // });
+});
