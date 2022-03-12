@@ -4,6 +4,8 @@ var connection = require("../database");
 const asyncErrorHandler = require("../middlewares/asyncErrorHandler");
 const auth = require("../middlewares/auth");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 //Check shop name
 exports.checkShopName = asyncErrorHandler(async (req, res) => {
@@ -27,8 +29,9 @@ exports.checkShopName = asyncErrorHandler(async (req, res) => {
 //update shop name
 exports.createShop = asyncErrorHandler(async (req, res) => {
   console.log(req.user);
+  console.log("body", req.body);
   console.log("inside Create Shop");
-
+  console.log(req.file);
   var createShopSql =
     "insert into etsy.shops (shop_name,user_id) values (" +
     mysql.escape(req.body.shop_name) +
@@ -37,7 +40,6 @@ exports.createShop = asyncErrorHandler(async (req, res) => {
     ")";
   console.log(createShopSql);
   connection.query(createShopSql, (err, result) => {
-    console.log(err);
     if (err) {
       res.send("Error while connecting database");
     } else {

@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
+import "./bootstrap.min.css";
 // import rootReducer from "./reducers/index";
 // import { createStore } from "redux";
 // import { provider } from "react-redux";

@@ -30,6 +30,8 @@ app.use(fileUpload());
 app.use(bodyParser.json());
 
 app.use("/", require("./routes/userRoutes"));
+app.use("/", require("./routes/shopRoutes"));
+app.use("/", require("./routes/itemRoutes"));
 
 // app.use("/", require("./routes1/authentication"));
 // app.use("/", require("./routes1/registerRoute"));

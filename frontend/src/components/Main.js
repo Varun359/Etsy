@@ -4,6 +4,7 @@ import Login from "./Login";
 import Register from "./Register";
 import Home from "./Home";
 import Header from "./Header";
+import UserProfile from "./userProfile";
 const Main = () => {
   return (
     <div>
@@ -14,6 +15,7 @@ const Main = () => {
         <Route path="/login" element={<Login></Login>} />
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/userProfile" element={<UserProfile />} />
       </Routes>
     </div>
   );

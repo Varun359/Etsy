@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
-const Register = () => {
+const RegisterComplete = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -28,8 +29,13 @@ const Register = () => {
     e.preventDefault();
     axios.defaults.withCredentials = true;
     axios
-      .post("http://localhost:3001/register", data)
+      .post("http://localhost:3001/create", data)
       .then((response) => {
+        toast.Success(
+          "Email is sent to ${email}. Click the link to complete your registration."
+        );
+        window.localStorage.setItem("email", email);
+
         if (response.status === 200) {
           console.log(response);
           setEmail("");
@@ -92,6 +98,9 @@ const Register = () => {
               Register
             </button>
           </form>
+          <div>
+            <ToastContainer />
+          </div>
           {created && (
             <p style={{ color: "green" }}> Successfully Registered</p>
           )}
@@ -104,4 +113,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterComplete;

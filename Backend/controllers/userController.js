@@ -2,13 +2,13 @@ const express = require("express");
 const mysql = require("mysql");
 var connection = require("../database");
 const bcrypt = require("bcrypt");
-//const User = require("../models/userModel");
 const asyncErrorHandler = require("../middlewares/asyncErrorHandler");
 //const sendToken = require("../utils/sendToken");
 // const ErrorHandler = require("../utils/errorHandler");
 // const sendEmail = require("../utils/sendEmail");
 const jwt = require("jsonwebtoken");
 const auth = require("../middlewares/auth");
+
 // Register User
 exports.registerUser = asyncErrorHandler(async (req, res) => {
   console.log("inside Register");
@@ -41,14 +41,18 @@ exports.registerUser = asyncErrorHandler(async (req, res) => {
         res.end("Error while creating user");
         console.log(err);
       } else {
-        // res.writeHead(200, {
-        //   "Content-Type": "text/plain",
-        // });
+        res.cookie("cookie", req.body.email, {
+          maxAge: 900000,
+          httpOnly: false,
+          path: "/",
+        });
         console.log(result);
         const token = jwt.sign(
           { user_id: result.insertId, email },
           "secret123",
-          { expiresIn: "1hr" }
+          {
+            expiresIn: "1hr",
+          }
         );
         const user = {
           token: token,
@@ -68,6 +72,7 @@ exports.registerUser = asyncErrorHandler(async (req, res) => {
   }
 });
 
+//login user
 exports.loginUser = asyncErrorHandler(async (req, res, next) => {
   console.log("inside login");
 
@@ -118,9 +123,6 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
         console.log("user ", req.session);
         req.session.user = req.body.email;
 
-        // res.writeHead(200, {
-        //   "Content-Type": "text/plain",
-        // });
         const email = result[0].email;
         const user_id = result[0].user_id;
         const user = {
@@ -150,10 +152,6 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
     }
   });
   console.log(req.body);
-  // } else {
-  //   console.log("hiii");
-  //   res.status(403).json("Incorrect email or password");
-  // }
 });
 
 // Get User Details
@@ -176,6 +174,7 @@ exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
+//check Token
 exports.checkToken = asyncErrorHandler(async (req, res, next) => {
   try {
     const token = req.header("auth-token");
@@ -229,7 +228,7 @@ exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
       res.send("Error while connecting database");
     } else {
       console.log(result);
-      console.log("hi");
+      //console.log("hi");
     }
   });
 

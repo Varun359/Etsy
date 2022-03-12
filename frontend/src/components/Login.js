@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 
@@ -38,6 +38,13 @@ const Login = () => {
         setInvalidCredentials(true);
       });
   };
+
+  useEffect(() => {
+    axios
+      .get("https://localhost:3000/")
+      .then((response) => setEmail(response.data));
+  }, []);
+
   return (
     <div class="container">
       {isLoggedIn && <Navigate to="/home" />}

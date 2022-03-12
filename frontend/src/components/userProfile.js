@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { withRouter, Link } from "react-router-dom";
+import editUserProfile from "./editUserProfile";
+import { Navigate } from "react-router-dom";
 
 const UserProfileShow = () => {
   return (
@@ -27,6 +29,9 @@ const UserProfileShow = () => {
 
       <div className="favorite-lists-navbar">
         <ul>
+          <li>
+            <Link to="/editProfile">Edit Profile</Link>
+          </li>
           <li>
             <a href="#">Favorite items</a>
           </li>
