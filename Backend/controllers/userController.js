@@ -114,11 +114,6 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
       console.log(err);
     } else {
       if (result.length == 1) {
-        res.cookie("cookie", req.body.email, {
-          maxAge: 900000,
-          httpOnly: false,
-          path: "/",
-        });
         console.log("Result", result[0]);
         console.log("user ", req.session);
         req.session.user = req.body.email;
@@ -141,6 +136,19 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
             console.log("I am in token");
             console.log(token);
             user.token = token;
+
+            const data = {
+              email: req.body.email,
+              user_id: result[0].user_id,
+              first_name: result[0].first_name,
+              token: token,
+            };
+            console.log(data);
+            res.cookie("cookie", data, {
+              maxAge: 9000000,
+              httpOnly: false,
+              path: "/",
+            });
             res.send(user);
           }
         );
@@ -166,9 +174,16 @@ exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
     } else {
       console.log(result);
       res.send({
-        name: result[0].first_name,
+        first_name: result[0].first_name,
         email: result[0].email,
-        id: result[0].user_id,
+        user_id: result[0].user_id,
+        country: result[0].country,
+        about: result[0].about,
+        phone_no: result[0].phone_no,
+        gender: result[0].gender,
+        city: result[0].city,
+        address: result[0].address,
+        date: result[0].date,
       });
     }
   });
@@ -216,28 +231,33 @@ exports.logoutUser = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
+exports.getUserDetails;
 // Update User Profile ( should also show user profile)
 exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
-  console.log("hi");
-  const getDetailsSql =
-    "select first_name,gender,city,phone_no,address,country from etsy.users where user_id=" +
-    mysql.escape(req.user.user_id);
-  console.log(getDetailsSql);
-  connection.query(getDetailsSql, (err, result) => {
-    if (err) {
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      //console.log("hi");
-    }
-  });
-
-  const name = req.body.first_name;
+  // console.log("hi");
+  // const getDetailsSql =
+  //   "select first_name,gender,city,phone_no,address,country from etsy.users where user_id=" +
+  //   mysql.escape(req.user.user_id);
+  // console.log(getDetailsSql);
+  // connection.query(getDetailsSql, (err, result) => {
+  //   if (err) {
+  //     res.send("Error while connecting database");
+  //   } else {
+  //     console.log(result);
+  //     //console.log("hi");
+  //   }
+  // });
+  console.log("hi user");
+  console.log(req.body);
+  const name = req.body.name;
   const gender = req.body.gender;
   const city = req.body.city;
   const phone_no = req.body.phone_no;
   const address = req.body.address;
   const country = req.body.country;
+  const email = req.body.email;
+  const DOB = req.body.date;
+  const about = req.body.about;
 
   var UpdateUserSql =
     "update etsy.users set first_name = " +
@@ -252,9 +272,16 @@ exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
     mysql.escape(address) +
     ", country=" +
     mysql.escape(country) +
+    ", email = " +
+    mysql.escape(email) +
+    ", DOB  = " +
+    mysql.escape(DOB) +
+    ", about = " +
+    mysql.escape(about) +
     " where user_id = " +
     mysql.escape(req.user.user_id);
 
+  console.log(UpdateUserSql);
   connection.query(UpdateUserSql, (err, result) => {
     if (err) {
       res.send("Error while connecting database");
