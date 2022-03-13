@@ -38,15 +38,19 @@ exports.checkShopName = asyncErrorHandler(async (req, res) => {
 
 //update shop name
 exports.createShop = asyncErrorHandler(async (req, res) => {
-  console.log(req.user);
-  console.log("body", req.body);
   console.log("inside Create Shop");
-  console.log(req.file);
+  console.log("body", req.body);
+  console.log(req.files);
+  var imageName = `${Date.now()}_${req.files.shopImage.name}`;
+  req.files.shopImage.mv(`../frontend/images/${imageName}`);
+
   var createShopSql =
-    "insert into etsy.shops (shop_name,user_id) values (" +
+    "insert into etsy.shops (shop_name,user_id,shop_image) values (" +
     mysql.escape(req.body.shop_name) +
     "," +
     mysql.escape(req.user.user_id) +
+    "," +
+    mysql.escape(imageName) +
     ")";
   console.log(createShopSql);
   connection.query(createShopSql, (err, result) => {

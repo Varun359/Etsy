@@ -1,16 +1,8 @@
-const auth = require("../middlewares/auth");
 const express = require("express");
-const {
-  registerUser,
-  loginUser,
-  getUserDetails,
-  checkToken,
-  updateProfile,
-} = require("../controllers/userController.js");
-
+const { imageUpload } = require("../controllers/imageController");
 const router = express.Router();
-
 const multer = require("multer");
+const path = require("path");
 
 const storage = multer.diskStorage({
   destination: (req, file, callBack) => {
@@ -29,26 +21,21 @@ const storage = multer.diskStorage({
     );
   },
 });
+
 const upload = multer({
   storage: storage,
 });
-
-// register -> create account x, y, z (.env) <--> jwt1 ttl -> 24hr
-router.route("/register").post(registerUser);
-router.route("/login").post(loginUser);
-router.route("/profile").get(auth, getUserDetails);
-router.route("/updateProfile").post(
-  auth,
+router.post(
+  "/imageUpload",
   async (req, res, next) => {
     try {
-      await upload.single("UserImage");
+      await upload.single("image");
       next();
     } catch (err) {
       console.log(err);
       res.send("failed!");
     }
   },
-  updateProfile
+  imageUpload
 );
-
 module.exports = router;

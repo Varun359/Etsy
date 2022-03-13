@@ -42,6 +42,7 @@ const EditUserProfile = () => {
     axios
       .post("http://localhost:3001/updateProfile", data, {
         headers: {
+          "content-Type": "multipart/form-data",
           "auth-token": cookie.cookie.token,
         },
       })

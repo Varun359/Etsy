@@ -8,6 +8,7 @@ const asyncErrorHandler = require("../middlewares/asyncErrorHandler");
 // const sendEmail = require("../utils/sendEmail");
 const jwt = require("jsonwebtoken");
 const auth = require("../middlewares/auth");
+const multer = require("multer");
 
 // Register User
 exports.registerUser = asyncErrorHandler(async (req, res) => {
@@ -231,7 +232,6 @@ exports.logoutUser = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-exports.getUserDetails;
 // Update User Profile ( should also show user profile)
 exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
   // console.log("hi");
@@ -249,6 +249,10 @@ exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
   // });
   console.log("hi user");
   console.log(req.body);
+  console.log(req.files);
+  var imageName = `${Date.now()}_${req.files.UserImage.name}`;
+  req.files.UserImage.mv(`../frontend/images/${imageName}`);
+
   const name = req.body.name;
   const gender = req.body.gender;
   const city = req.body.city;
@@ -278,6 +282,8 @@ exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
     mysql.escape(DOB) +
     ", about = " +
     mysql.escape(about) +
+    ", user_image = " +
+    mysql.escape(imageName) +
     " where user_id = " +
     mysql.escape(req.user.user_id);
 
