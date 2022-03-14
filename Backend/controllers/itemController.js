@@ -3,6 +3,7 @@ const { rawListeners } = require("../database");
 var connection = require("../database");
 const asyncErrorHandler = require("../middlewares/asyncErrorHandler");
 
+//get items from the shop
 exports.getShopItems = asyncErrorHandler(async (req, res) => {
   console.log(req.user);
   var getItemsSql =
@@ -23,6 +24,7 @@ exports.getShopItems = asyncErrorHandler(async (req, res) => {
   });
 });
 
+//add items to the shop
 exports.insertIntoShop = asyncErrorHandler(async (req, res) => {
   console.log("inside insert into shop page");
   var insertItemsSql =
@@ -56,3 +58,73 @@ exports.insertIntoShop = asyncErrorHandler(async (req, res) => {
 //     var changeItem =
 //       "update etsy.items set is_changed = false where etsy.items.shop_id = (select shop_id " ;
 // })
+
+//get favorites from the shop
+exports.getFavoriteItems = asyncErrorHandler(async (req, res) => {
+  console.log("Inside get fevorites");
+  var getFavoritesSql =
+    "select item_name,item_category,item_desc,item_price,item_quantity,item_image,user_id,etsy.user_favorites.item_id from etsy.items,etsy.user_favorites where etsy.items.item_id = etsy.user_favorites.item_id and etsy.user_favorites.user_id=" +
+    mysql.escape(req.user.user_id);
+
+  console.log(getFavoritesSql);
+  connection.query(getFavoritesSql, (err, result) => {
+    if (err) {
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+      res.send(result);
+    }
+  });
+});
+
+//get all items
+exports.getAllItems = asyncErrorHandler(async (req, res) => {
+  console.log("Inside get all items");
+  var getAllItemsSql =
+    "select item_id,item_name,item_category,item_desc,item_price,item_quantity,item_image,etsy.shops.shop_id,etsy.shops.shop_name from etsy.shops,etsy.items where etsy.shops.shop_id = etsy.items.shop_id";
+  connection.query(getAllItemsSql, (err, result) => {
+    if (err) {
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+      res.send(result);
+    }
+  });
+});
+
+//add favorites
+exports.addFavorites = asyncErrorHandler(async (req, res) => {
+  console.log("Inside add favorites ");
+  var addFavoritesSQL =
+    "insert into etsy.user_favorites (user_id,item_id) values (" +
+    mysql.escape(req.user.user_id) +
+    "," +
+    mysql.escape(req.body.item_id) +
+    ")";
+  connection.query(addFavoritesSQL, (err, result) => {
+    if (err) {
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+      res.send("Item Added to user Favorites");
+    }
+  });
+});
+
+//Remove Favorites
+exports.removeFavorites = asyncErrorHandler(async (req, res) => {
+  console.log("Inside Remove favorites ");
+  var removeFavoritesSQL =
+    "DELETE FROM etsy.user_favorites WHERE etsy.user_favorites.user_id = " +
+    mysql.escape(req.user.user_id) +
+    " and etsy.user_favorites.item_id=" +
+    mysql.escape(req.body.item_id);
+  connection.query(removeFavoritesSQL, (err, result) => {
+    if (err) {
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+      res.send("Item Removed from user Favorites");
+    }
+  });
+});
