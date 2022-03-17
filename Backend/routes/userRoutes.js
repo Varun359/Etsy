@@ -7,6 +7,8 @@ const {
   checkToken,
   updateProfile,
 } = require("../controllers/userController.js");
+const mysql = require("mysql");
+var connection = require("../database");
 
 const router = express.Router();
 
@@ -37,7 +39,9 @@ const upload = multer({
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 router.route("/profile").get(auth, getUserDetails);
-router.route("/updateProfile").post(
+router.route("/updateProfile").post(auth, updateProfile);
+
+router.route("/updateProfileImage/:user_id").post(
   auth,
   async (req, res, next) => {
     try {
@@ -48,7 +52,34 @@ router.route("/updateProfile").post(
       res.send("failed!");
     }
   },
-  updateProfile
+  (req, res, next) => {
+    var userId = req.params.user_id;
+    console.log(req.files);
+
+    var imageName = null;
+    if (req.files.length !== 0) {
+      imageName = `${Date.now()}_${req.files.UserImage.name}`;
+      req.files.UserImage.mv(`../client/images/${imageName}`);
+      var updateImageSql =
+        "update etsy.users set user_image = " +
+        mysql.escape(imageName) +
+        " where user_id = " +
+        mysql.escape(userId);
+      console.log(updateImageSql);
+      connection.query(updateImageSql, (err, result) => {
+        if (err) {
+          res.send("Error while connecting database");
+        } else {
+          console.log(result);
+          res.json({
+            imageName,
+          });
+        }
+      });
+    } else {
+      res.send("please select an image");
+    }
+  }
 );
 
 module.exports = router;

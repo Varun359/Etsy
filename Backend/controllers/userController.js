@@ -42,27 +42,29 @@ exports.registerUser = asyncErrorHandler(async (req, res) => {
         res.end("Error while creating user");
         console.log(err);
       } else {
-        res.cookie("cookie", req.body.email, {
-          maxAge: 900000,
-          httpOnly: false,
-          path: "/",
-        });
         console.log(result);
         const token = jwt.sign(
           { user_id: result.insertId, email },
           "secret123",
           {
-            expiresIn: "1hr",
+            expiresIn: "3hr",
           }
         );
-        const user = {
+        const data = {
           token: token,
           user_id: result.insertId,
+          first_name: req.body.firstName,
           email: email,
         };
-        res.user = user;
+        res.cookie("cookie", data, {
+          maxAge: 900000,
+          httpOnly: false,
+          path: "/",
+        });
+        console.log(data);
+        res.user = data;
         console.log(res);
-        res.send(user);
+        res.send(data);
         //res.end("User Registered Succesfully");
       }
     });
@@ -77,35 +79,30 @@ exports.registerUser = asyncErrorHandler(async (req, res) => {
 exports.loginUser = asyncErrorHandler(async (req, res, next) => {
   console.log("inside login");
 
-  // var passQuery =
-  //   "select password from etsy.users where email=" +
-  //   mysql.escape(req.body.email);
-
-  // connection.query(passQuery, (err, result) => {
-  //   if (err) {
-  //     res.writeHead(503, {
-  //       "Content-Type": "text/plain",
-  //     });
-  //     console.log("cannot connect to database");
-  //   } else {
-  //     console.log(result[0]);
-  //     console.log(result[0].password);
-  //   }
-  // });
-
-  // if (
-  //   bcrypt.compare(
-  //     req.body.password,
-  //     "$2b$10$JsfxJv/WE9.cbh307k9XzebZttuaAeXpjmYJIOny6qUX2OeRBgcNC"
-  //   )
-  // ) {
-
   var loginSql =
     "select * from etsy.users where email=" +
     mysql.escape(req.body.email) +
     "and password = " +
     mysql.escape(req.body.password);
 
+  // var shops = [];
+  // var getShopsByIdSql =
+  //   "select shop_id from etsy.shops where user_id in (select user_id from etsy.users where email = " +
+  //   mysql.escape(req.body.email) +
+  //   ")";
+
+  // console.log(getShopsByIdSql);
+
+  // connection.query(getShopsByIdSql, (err, result) => {
+  //   if (err) {
+  //     res.send("Error while connecting database");
+  //   } else {
+  //     console.log(result);
+  //     shops = result;
+  //   }
+  // });
+  // console.log(shops);
+  console.log(loginSql);
   connection.query(loginSql, (err, result) => {
     if (err) {
       res.writeHead(503, {
@@ -129,7 +126,7 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
         jwt.sign(
           { user_id: email, user_id },
           "secret123",
-          { expiresIn: "1h" },
+          { expiresIn: "3h" },
           (err, token) => {
             if (err) {
               console.log(err);
@@ -143,16 +140,19 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
               user_id: result[0].user_id,
               first_name: result[0].first_name,
               token: token,
+              //shops: shops,
             };
+
             console.log(data);
             res.cookie("cookie", data, {
               maxAge: 9000000,
               httpOnly: false,
               path: "/",
             });
-            res.send(user);
+            res.send(data);
           }
         );
+
         // res.end("Succesfully logged in");
       } else {
         res.status(403).json("Incorrect email or password");
@@ -234,25 +234,10 @@ exports.logoutUser = asyncErrorHandler(async (req, res, next) => {
 
 // Update User Profile ( should also show user profile)
 exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
-  // console.log("hi");
-  // const getDetailsSql =
-  //   "select first_name,gender,city,phone_no,address,country from etsy.users where user_id=" +
-  //   mysql.escape(req.user.user_id);
-  // console.log(getDetailsSql);
-  // connection.query(getDetailsSql, (err, result) => {
-  //   if (err) {
-  //     res.send("Error while connecting database");
-  //   } else {
-  //     console.log(result);
-  //     //console.log("hi");
-  //   }
-  // });
   console.log("hi user");
   console.log(req.body);
-  console.log(req.files);
-  var imageName = `${Date.now()}_${req.files.UserImage.name}`;
-  req.files.UserImage.mv(`../frontend/images/${imageName}`);
-
+  console.log(req.user.user_id);
+  // console.log("token)
   const name = req.body.name;
   const gender = req.body.gender;
   const city = req.body.city;
@@ -282,8 +267,6 @@ exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
     mysql.escape(DOB) +
     ", about = " +
     mysql.escape(about) +
-    ", user_image = " +
-    mysql.escape(imageName) +
     " where user_id = " +
     mysql.escape(req.user.user_id);
 
@@ -295,6 +278,7 @@ exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
       console.log(result);
     }
   });
+
   res.status(200).json({
     success: true,
   });
