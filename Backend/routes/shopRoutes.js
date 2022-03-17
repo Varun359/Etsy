@@ -6,9 +6,14 @@ const express = require("express");
 const {
   checkShopName,
   createShop,
+  changeShopName,
+  getShopItems,
+  insertIntoShop,
+  editShopItem,
 } = require("../controllers/shopController.js");
 
 const multer = require("multer");
+const { get } = require("./itemRoutes");
 
 const storage = multer.diskStorage({
   destination: (req, file, callBack) => {
@@ -35,8 +40,12 @@ const upload = multer({
 // const upload = multer({ storage: storage }).single("pro");
 
 const router = express.Router();
-
+//get shop items by shop id.
+router.route("/shopItems").get(auth, getShopItems);
+router.route("/insertItems").post(auth, insertIntoShop);
 router.route("/checkShop").get(auth, checkShopName);
+router.route("/changeShopName").get(auth, changeShopName);
+router.route("/editShopItem/:item_id").get(auth, editShopItem);
 router.route("/createShop").post(
   auth,
   async (req, res, next) => {
