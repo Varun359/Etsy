@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { Cancel } from "@material-ui/icons";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+// import { useDispatch } from "react-redux";
+// import { register } from "../features/userSlice";
 
-const Register = () => {
+function Register({ closeModal, closeSignIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -19,7 +22,17 @@ const Register = () => {
     setFirstName(e.target.value);
   };
 
+  // const dispatch = useDispatch();
   const onSubmitHandler = (e) => {
+    e.preventDefault();
+    // dispatch(
+    //   register({
+    //     email: email,
+    //     password: password,
+    //     firstName: firstName,
+    //     loggedIn: true,
+    //   })
+    // );
     const data = {
       email: email,
       firstName: firstName,
@@ -36,6 +49,8 @@ const Register = () => {
           setPassword("");
           setFirstName("");
           setCreated(true);
+          closeModal(e, true);
+          closeSignIn(e, true);
         }
       })
       .catch((err) => {
@@ -44,51 +59,57 @@ const Register = () => {
       });
   };
   return (
-    <div class="container">
+    <>
       {created && <Navigate to="/home" />}
-      <div class="login-form">
-        <div class="main-div">
-          <div class="panel">
-            <h2>Register</h2>
-            <p>Please enter your details</p>
-            {/* {this.state.invalidCredentials && <p>Invalid Credentials</p>} */}
+      <div>
+        <div className="signin_modal">
+          <div style={{ position: "fixed", right: -30, color: "black" }}>
+            <Cancel onClick={(e) => closeModal(e)}></Cancel>
           </div>
-
-          <form onSubmit={onSubmitHandler}>
-            <div class="form-group">
+          <div className="signin__heading">
+            <h4>Register</h4>
+          </div>
+          <form className="signin_form" onSubmit={onSubmitHandler}>
+            <div className="form-group">
+              <label htmlFor="email">Email Address</label>
+              <br />
               <input
-                required
                 onChange={emailChangeHandler}
                 value={email}
                 type="email"
-                class="form-control"
-                name="email"
-                placeholder="email"
+                className="email"
+                id="email"
+                required
               />
             </div>
-            <div class="form-group">
+            <div className="form-group">
+              <label htmlFor="firstName">First Name</label>
+              <br />
               <input
-                required
                 onChange={firstNameChangeHandler}
                 value={firstName}
                 type="text"
-                class="form-control"
-                name="FirstName"
-                placeholder="First Name"
+                className="email"
+                id="firstName"
+                required
               />
             </div>
-            <div class="form-group">
+            <div className="htmlForm-group">
+              <label htmlFor="password">Password</label>
+              <br />
               <input
-                required
                 onChange={passwordChangeHandler}
                 value={password}
                 type="password"
-                class="form-control"
-                name="password"
-                placeholder="Password"
+                className="password"
+                id="password"
+                required
               />
             </div>
-            <button type="submit" class="btn btn-primary">
+            {/* <div className="forgot_password">
+              <p className="password_forgot">Forgot your password?</p>
+            </div> */}
+            <button type="submit" className="btn btn-primary">
               Register
             </button>
           </form>
@@ -96,12 +117,13 @@ const Register = () => {
             <p style={{ color: "green" }}> Successfully Registered</p>
           )}
           {created === false && (
-            <p style={{ color: "red" }}>Errror while registering</p>
+            <p style={{ color: "red" }}>Error while registering</p>
           )}
         </div>
+        <div className="bg" onClick={(e) => closeModal(e)} />
       </div>
-    </div>
+    </>
   );
-};
+}
 
 export default Register;
