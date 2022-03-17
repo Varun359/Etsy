@@ -1,0 +1,66 @@
+
+
+.card {
+  width: 15em;
+  background-color: #fff;
+  margin-right:  0.5em;
+  cursor: pointer;
+}
+
+.card-header {
+  width: 100%;
+  position: relative;
+}
+.dashBoardItem__icon{
+  position: absolute;
+  top:5%;
+  right: 5%;
+  cursor: pointer;
+  padding: 8px 8px;
+  border-radius: 50px;
+  background-color: white;
+  color:rgba(136,136,136);
+}
+.dashBoardItem__icon__filled{
+  position: absolute;
+  top:5%;
+  right: 5%;
+  cursor: pointer;
+  padding: 8px 8px;
+  border-radius: 50px;
+  background-color: white;
+  color:#A61A2E;
+}
+.card-header img {
+  width: 100%;
+  border-top-left-radius: 0.125rem;
+  border-top-right-radius: 0.125rem;
+}
+
+.card-content {
+  padding: 0.25rem 0.5rem;
+}
+
+
+.card-content small{
+  line-height: 1.6;
+  font-size: .75rem;
+  color: #595959;
+}
+
+
+
+.card-content p {
+  font-size: 1rem;
+}
+
+
+
+.product__name{
+  font-weight: normal;
+  overflow: hidden ;
+  text-overflow: ellipsis ;
+  white-space: nowrap ;
+  font-weight: 400;
+  line-height: 1.6;
+}

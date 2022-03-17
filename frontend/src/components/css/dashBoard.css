@@ -1,0 +1,5 @@
+.dashBoardItem{
+    display: flex;
+    margin: .25em;
+    flex-wrap: wrap;
+}

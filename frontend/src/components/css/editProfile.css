@@ -1,0 +1,22 @@
+.editProfile__img_banner {
+  position: relative;
+}
+.editProfile__shop_icon {
+  position: absolute;
+  bottom: 1em;
+  left: 3.6em;
+  padding: 0.25em 0.3em;
+  background-color: #fff;
+  color: black;
+  border-radius: 50%;
+}
+
+input[type="file"] {
+  display: none;
+}
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
