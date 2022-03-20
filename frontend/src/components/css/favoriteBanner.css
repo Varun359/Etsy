@@ -1,60 +1,60 @@
 .favoriteBanner {
-  margin-top: 30px;
-  display: flex;
-  justify-content: space-between;
-  max-height: 400px;
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    max-height: 400px;
 }
 .favoriteBanner__main {
-  height: inherit;
+    height: inherit;
 }
 .favoriteBanner__main_img {
-  width: 100px;
-  height: 100px;
-  /* width: auto;
+    width: 130px;
+    height: 130px;
+    /* width: auto;
   height: auto; */
-  display: block;
-  object-fit: cover;
-  border-radius: 50%;
+    display: block;
+    object-fit: cover;
+    border-radius: 50%;
 }
 .favoriteBanner__text {
-  margin-top: 1em;
-  padding: 0 2em;
-  width: 100%;
-  display: flex;
-  box-sizing: border-box;
+    margin-top: 1em;
+    padding: 0 2em;
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
 }
 .favoriteBanner__text_name {
-  padding-right: 0.5em;
-  text-transform: capitalize;
-  font-weight: 500;
+    padding-right: 0.5em;
+    text-transform: capitalize;
+    font-weight: 500;
 }
 .favoriteBanner__text_icon {
-  color: black;
-  padding: 0.25em 0.3em;
-  background-color: rgba(136, 136, 136, 0.15);
-  border-radius: 50%;
-  margin-top: 0.15em;
+    color: black;
+    padding: 0.25em 0.3em;
+    background-color: rgba(136, 136, 136, 0.15);
+    border-radius: 50%;
+    margin-top: 0.15em;
 }
 .favoriteBanner__shop {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
 }
 .favoriteBanner__shop:hover {
-  box-shadow: 0px 0px 10px rgba(136, 136, 136, 0.5);
-  border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(136, 136, 136, 0.5);
+    border-radius: 5px;
 }
 .favoriteBanner__shop_img {
-  max-width: 100%;
-  max-height: 50px;
-  width: auto;
-  height: auto;
-  display: block;
+    width: 84px;
+    height: 84px;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
 }
 .favoriteBanner__shop_name {
-  font-weight: 400;
-  text-align: center;
-  font-size: 0.9rem;
-  width: 100%;
+    font-weight: 400;
+    text-align: center;
+    font-size: 0.9rem;
+    width: 100%;
 }

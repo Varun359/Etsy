@@ -5,6 +5,7 @@ import "./css/dashBoard.css";
 import { useCookies } from "react-cookie";
 import DashboardContext from "./Dashboard-context";
 import ItemOverviewPage from "./ItemOverviewPage";
+import { BASE_URL } from "../variables";
 //import { env } from "process";
 function DashBoard({ loggedIn }) {
   var data = [];
@@ -42,7 +43,7 @@ function DashBoard({ loggedIn }) {
     console.log(cookie);
     if (cookie === undefined) {
       axios
-        .get("http://localhost:3001/allItems", {
+        .get(`${BASE_URL}/allItems`, {
           headers: {
             "content-Type": "application/json",
           },
@@ -53,8 +54,8 @@ function DashBoard({ loggedIn }) {
           var dashBoardData_dummy = data.map((item) => {
             var ImageSrc =
               item.item_image === null
-                ? "http://localhost:3001/images/item_image.avif"
-                : `http://localhost:3001/images/${item.item_image}`;
+                ? `${BASE_URL}/images/item_image.avif`
+                : `${BASE_URL}/images/${item.item_image}`;
             var dashBoardItem = (
               <DashBoardItem
                 key={item.item_id}
@@ -78,7 +79,7 @@ function DashBoard({ loggedIn }) {
     } else {
       console.log("cookie", cookie.token);
       axios
-        .get("http://localhost:3001/allItemsById", {
+        .get(`${BASE_URL}/allItemsById`, {
           headers: {
             "content-Type": "application/json",
             "auth-token": cookie.token,
@@ -90,8 +91,8 @@ function DashBoard({ loggedIn }) {
           var dashBoardData_dummy = data.map((item) => {
             var ImageSrc =
               item.item_image === null
-                ? "http://localhost:3001/images/item_image.avif"
-                : `http://localhost:3001/images/${item.item_image}`;
+                ? `${BASE_URL}/images/item_image.avif`
+                : `${BASE_URL}/images/${item.item_image}`;
             console.log(ImageSrc);
             console.log(item);
             var dashBoardItem = (

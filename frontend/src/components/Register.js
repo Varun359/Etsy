@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Cancel } from "@material-ui/icons";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import { BASE_URL } from "../variables";
 // import { useDispatch } from "react-redux";
 // import { register } from "../features/userSlice";
 let registerData = {};
@@ -42,48 +43,51 @@ function Register({ handleTriggerRefresh, closeModal, closeSignIn }) {
     e.preventDefault();
     axios.defaults.withCredentials = true;
     axios
-      .post("http://localhost:3001/register", data)
-      .then((response) => {
-        if (response.status === 200) {
-          console.log(response);
+        .post(`${BASE_URL}/register`, data)
+        .then((response) => {
+            if (response.status === 200) {
+                console.log(response);
 
-          const data = {
-            email: response.data.email,
-            password: password,
-          };
-          registerData = data;
-          console.log("data", data);
+                const data = {
+                    email: response.data.email,
+                    password: password,
+                };
+                registerData = data;
+                console.log("data", data);
 
-          axios
-            .post("http://localhost:3001/login", registerData)
-            .then((response) => {
-              console.log("Status Code : ", response.status);
-              if (response.status === 200) {
-                localStorage.setItem("user", JSON.stringify(response.data));
-                if (!response.data.shop_name) {
-                  axios
-                    .post("http://localhost:3001/login", registerData)
+                axios
+                    .post(`${BASE_URL}/login`, registerData)
                     .then((response) => {
-                      handleTriggerRefresh();
+                        console.log("Status Code : ", response.status);
+                        if (response.status === 200) {
+                            localStorage.setItem(
+                                "user",
+                                JSON.stringify(response.data)
+                            );
+                            if (!response.data.shop_name) {
+                                axios
+                                    .post(`${BASE_URL}/login`, registerData)
+                                    .then((response) => {
+                                        handleTriggerRefresh();
+                                    });
+                            }
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
                     });
-                }
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-          setEmail("");
-          setPassword("");
-          setFirstName("");
-          setCreated(true);
-          closeModal(e, true);
-          closeSignIn(e, true);
-        }
-      })
-      .catch((err) => {
-        setCreated(false);
-        console.log(err);
-      });
+                setEmail("");
+                setPassword("");
+                setFirstName("");
+                setCreated(true);
+                closeModal(e, true);
+                closeSignIn(e, true);
+            }
+        })
+        .catch((err) => {
+            setCreated(false);
+            console.log(err);
+        });
   };
   //   useEffect(() => {
   //     console.log("inside login after register", registerData);
