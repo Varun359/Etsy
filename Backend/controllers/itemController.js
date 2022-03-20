@@ -13,7 +13,7 @@ const asyncErrorHandler = require("../middlewares/asyncErrorHandler");
 exports.getFavoriteItems = asyncErrorHandler(async (req, res) => {
   console.log("Inside get fevorites");
   var getFavoritesSql =
-    "select distinct item_name,item_category,item_desc,item_price,item_quantity,item_image,etsy.items.user_id,etsy.user_favorites.item_id from etsy.items,etsy.user_favorites where etsy.items.item_id = etsy.user_favorites.item_id and etsy.user_favorites.user_id=" +
+    "select distinct item_name,item_category,item_desc,item_price,item_quantity,item_image,sales_count,etsy.items.user_id,etsy.user_favorites.item_id from etsy.items,etsy.user_favorites where etsy.items.item_id = etsy.user_favorites.item_id and etsy.user_favorites.user_id=" +
     mysql.escape(req.user.user_id);
 
   console.log(getFavoritesSql);
@@ -31,7 +31,7 @@ exports.getFavoriteItems = asyncErrorHandler(async (req, res) => {
 exports.getAllItems = asyncErrorHandler(async (req, res) => {
   console.log("Inside get all items");
   var getAllItemsSql =
-    " select item_id,item_name,item_category,item_desc,item_price,item_quantity,item_image,etsy.users.user_id,etsy.users.shop_name from etsy.users,etsy.items where etsy.users.user_id = etsy.items.user_id";
+    " select item_id,item_name,item_category,item_desc,item_price,item_quantity,item_image,sales_count,etsy.users.user_id,etsy.users.shop_name from etsy.users,etsy.items where etsy.users.user_id = etsy.items.user_id";
   console.log(getAllItemsSql);
   connection.query(getAllItemsSql, (err, result) => {
     if (err) {
@@ -125,12 +125,12 @@ exports.getAllItemsById = asyncErrorHandler(async (req, res) => {
 exports.searchItems = asyncErrorHandler(async (req, res) => {
   console.log("Inside search items by search");
   var searchItemsSql =
-    " select item_id,item_name,item_category,item_desc,item_price,item_quantity,item_image from etsy.items where item_name like '%" +
-    req.body.search +
+    " select item_id,item_name,item_category,item_desc,item_price,item_quantity,item_image,sales_count from etsy.items where item_name like '%" +
+    req.params.search +
     "%' or item_category like '%" +
-    req.body.search +
+    req.params.search +
     "%' or item_desc like '%" +
-    req.body.search +
+    req.params.search +
     "%'";
   console.log(searchItemsSql);
   connection.query(searchItemsSql, (err, result) => {
@@ -148,12 +148,12 @@ exports.searchItems = asyncErrorHandler(async (req, res) => {
 exports.searchFavoriteItems = asyncErrorHandler(async (req, res) => {
   console.log("Inside favorite items by search");
   var searchFavItemsSql =
-    "select etsy.items.item_id,item_name,item_category,item_desc,item_price,item_quantity,item_image from etsy.items,etsy.user_favorites where etsy.items.item_id=etsy.user_favorites.item_id and (item_name like '%" +
-    req.body.search +
+    "select distinct etsy.items.item_id,item_name,item_category,item_desc,item_price,item_quantity,item_image,sales_count from etsy.items,etsy.user_favorites where etsy.items.item_id=etsy.user_favorites.item_id and (item_name like '%" +
+    req.params.search +
     "%' or item_desc like '%" +
-    req.body.search +
+    req.params.search +
     "%' or item_category like '%" +
-    req.body.search +
+    req.params.search +
     "%')";
   console.log(searchFavItemsSql);
   connection.query(searchFavItemsSql, (err, result) => {
@@ -171,7 +171,7 @@ exports.searchFavoriteItems = asyncErrorHandler(async (req, res) => {
 exports.getItemDetails = asyncErrorHandler(async (req, res) => {
   console.log("get item details by item id");
   var getItemByIdSql =
-    "select etsy.items.*,etsy.users.shop_name from etsy.items,etsy.users where etsy.users.user_id=etsy.items.shop_id and etsy.items.item_id=" +
+    "select etsy.items.*,etsy.users.shop_name from etsy.items,etsy.users where etsy.users.user_id=etsy.items.user_id and etsy.items.item_id=" +
     mysql.escape(req.params.item_id);
   console.log(getItemByIdSql);
   connection.query(getItemByIdSql, (err, result) => {

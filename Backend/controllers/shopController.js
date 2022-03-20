@@ -29,36 +29,41 @@ exports.checkShopName = asyncErrorHandler(async (req, res) => {
     if (err) {
       res.send("Error while connecting database");
     } else {
-      console.log(result);
+      console.log(result.length);
+      var check = false;
+      result.forEach((shop) => {
+        console.log(shop.shop_name);
+        if (shop.shop_name === req.body.shop_name) {
+          check = true;
+        }
+      });
+      res.send(check);
       //res.send({ shop_name: result[0].shop_name });
-      res.send(result);
     }
   });
 });
 
 //update shop name
-exports.createShop = asyncErrorHandler(async (req, res) => {
+exports.updateShop = asyncErrorHandler(async (req, res) => {
   console.log("inside Create Shop");
   console.log("body", req.body);
   console.log(req.files);
   var imageName = `${Date.now()}_${req.files.shopImage.name}`;
   req.files.shopImage.mv(`../frontend/images/${imageName}`);
 
-  var createShopSql =
-    "update etsy.users set shop_name = " +
-    mysql.escape(req.body.shop_name) +
-    ",shop_image =" +
+  var updateShopSql =
+    "update etsy.users set shop_image = " +
     mysql.escape(imageName) +
     "where user_id=" +
     mysql.escape(req.user.user_id);
 
-  console.log(createShopSql);
-  connection.query(createShopSql, (err, result) => {
+  console.log(updateShopSql);
+  connection.query(updateShopSql, (err, result) => {
     if (err) {
       res.send("Error while connecting database");
     } else {
       console.log(result);
-      res.send("New Shop created");
+      res.send("Shop Updated");
     }
   });
 });
@@ -89,8 +94,29 @@ exports.changeShopName = asyncErrorHandler(async (req, res) => {
 exports.getShopItems = asyncErrorHandler(async (req, res) => {
   console.log(req.user);
   var getItemsSql =
-    "select distinct item_id,item_name,item_price,item_desc,item_quantity,item_category,item_image,shop_name,sales_count from etsy.items,etsy.users where etsy.users.user_id=" +
+    "select distinct item_id,item_name,item_price,item_desc,item_quantity,item_category,item_image,shop_name from etsy.items,etsy.users where etsy.users.user_id=etsy.items.user_id and etsy.users.user_id=" +
     mysql.escape(req.user.user_id);
+
+  console.log("inside Get Shop Items page");
+  console.log(getItemsSql);
+  connection.query(getItemsSql, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+      //    res.send({ shop_name: result[0].shop_name });
+      res.send(result);
+    }
+  });
+});
+
+//get items from the shop by Id with params
+exports.getShopItemsById = asyncErrorHandler(async (req, res) => {
+  console.log(req.user);
+  var getItemsSql =
+    "select distinct item_id,item_name,item_price,item_desc,item_quantity,item_category,item_image,shop_name from etsy.items,etsy.users where etsy.users.user_id=etsy.items.user_id and etsy.users.user_id=" +
+    mysql.escape(req.params.user_id);
 
   console.log("inside Get Shop Items page");
   console.log(getItemsSql);
@@ -109,10 +135,10 @@ exports.getShopItems = asyncErrorHandler(async (req, res) => {
 //add items to the shop
 exports.insertIntoShop = asyncErrorHandler(async (req, res) => {
   console.log("inside insert into shop page");
-  console.log(req);
+  console.log(req.body);
   var insertItemsSql =
     "insert into etsy.items (item_name,item_category, item_desc, item_price,item_quantity,user_id) values (" +
-    mysql.escape(req.body.shopName) +
+    mysql.escape(req.body.itemName) +
     "," +
     mysql.escape(req.body.category) +
     "," +
@@ -169,6 +195,70 @@ exports.editShopItem = asyncErrorHandler(async (req, res) => {
     } else {
       console.log(result);
       res.send("Item updated");
+    }
+  });
+});
+
+//get shop details by Id
+exports.getShopDetails = asyncErrorHandler(async (req, res) => {
+  console.log(req.user);
+  var getShopDetailsSql =
+    "select shop_name,shop_image,user_image from etsy.users where etsy.users.user_id=" +
+    mysql.escape(req.user.user_id);
+
+  console.log("inside Get Shop details by Id");
+  console.log(getShopDetailsSql);
+  connection.query(getShopDetailsSql, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+      //    res.send({ shop_name: result[0].shop_name });
+      res.send(result);
+    }
+  });
+});
+
+//get shop details by id
+exports.getShopDetailsById = asyncErrorHandler(async (req, res) => {
+  console.log(req.user);
+  var getShopDetailsByIdSql =
+    "select * from etsy.users where etsy.users.user_id=" +
+    mysql.escape(req.params.user_id);
+
+  console.log("inside Get Shop details by Id");
+  console.log(getShopDetailsByIdSql);
+  connection.query(getShopDetailsByIdSql, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+      //    res.send({ shop_name: result[0].shop_name });
+      res.send(result);
+    }
+  });
+});
+//create shop
+exports.createShop = asyncErrorHandler(async (req, res) => {
+  console.log(req.user);
+  var getShopDetailsSql =
+    "update etsy.users set shop_name=" +
+    mysql.escape(req.body.shop_name) +
+    "where etsy.users.user_id=" +
+    mysql.escape(req.user.user_id);
+
+  console.log("inside Get Shop details by Id");
+  console.log(getShopDetailsSql);
+  connection.query(getShopDetailsSql, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send("Error while connecting database");
+    } else {
+      console.log(result);
+      //    res.send({ shop_name: result[0].shop_name });
+      res.send(result);
     }
   });
 });

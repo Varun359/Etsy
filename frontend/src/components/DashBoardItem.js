@@ -4,6 +4,7 @@ import { FavoriteBorder, Favorite } from "@material-ui/icons";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import DashboardContext from "./Dashboard-context";
+import { Link } from "react-router-dom";
 let sample = false;
 function DashBoardItem({
   itemId,
@@ -94,25 +95,23 @@ function DashBoardItem({
     }
   };
   return (
-    <div className="card">
-      <div className="card-header">
-        <img src={src} alt={name} />
-        <div
-          onClick={(e) => {
-            addFavorite(e);
-          }}
-        >
-          {!isFavorite && <FavoriteBorder className="dashBoardItem__icon" />}
-          {isFavorite && <Favorite className="dashBoardItem__icon__filled" />}
-        </div>
+    <Link to={`/item/${itemId}`} class="card">
+      <img class="card-img-top" src={src} alt="Card cap" />
+      <div
+        onClick={(e) => {
+          addFavorite(e);
+          e.preventDefault();
+        }}
+      >
+        {!isFavorite && <FavoriteBorder className="dashBoardItem__icon" />}
+        {isFavorite && <Favorite className="dashBoardItem__icon__filled" />}
       </div>
-
-      <div className="card-content">
-        <h3 className="product__name">{name}</h3>
-        <small>{shopName}</small>
-        <h3>{`${currency} ${price}`}</h3>
+      <div class="card-body">
+        <h5 class="card-title">{name}</h5>
+        <p class="card-text">{shopName}</p>
+        <h4 class="card-text font-weight-bold">{`${currency} ${price}`}</h4>
       </div>
-    </div>
+    </Link>
   );
 }
 

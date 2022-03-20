@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // import DashBoardItem from "./DashBoardItem";
 import axios from "axios";
 import ShopItem from "./ShopItem";
-function ShopList() {
+function ShopList({ owner, user_id }) {
   const [cookie, setCookie] = useState(undefined);
   const [shopList, setShopList] = useState([]);
   const [refresh, setRefresh] = useState(false);
@@ -21,7 +21,7 @@ function ShopList() {
     });
     if (cookie !== undefined)
       axios
-        .get("http://localhost:3001/shopItems", {
+        .get("http://localhost:3001/shopItems/" + user_id, {
           headers: {
             "auth-token": cookie.token,
           },
@@ -32,20 +32,18 @@ function ShopList() {
           var displayShopList = response.data.map((item) => {
             var ImageSrc =
               item.item_image === null
-                ? require("../images/item_image.avif")
-                : require(`../images/${item.item_image}`);
+                ? "http://localhost:3001/images/item_image.avif"
+                : `http://localhost:3001/images/${item.item_image}`;
             console.log(ImageSrc);
             if (item.item_name === null) {
               return null;
             }
             return (
               <ShopItem
+                owner={owner}
                 key={item.item_id}
-                itemId={item.item_id}
+                item={item}
                 src={ImageSrc}
-                name={item.item_name}
-                shopName={item.shop_name}
-                price={item.item_price}
                 currency={"$"}
               />
             );

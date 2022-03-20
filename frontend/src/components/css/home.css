@@ -1,9 +1,12 @@
-.container{
-    margin: 0 auto;
-    max-width: 1200px;
-    padding: 0 1.25rem;
-
+.container {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 1.25rem;
 }
-.home__header{
-    border-bottom: 1px solid rgba(34, 34, 34, 0.15);
+.home__header {
+  border-bottom: 1px solid rgba(34, 34, 34, 0.15);
+}
+.home_footer {
+  /* background-color: blue; */
+  height: 2em;
 }

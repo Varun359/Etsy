@@ -5,7 +5,7 @@ import { Navigate } from "react-router-dom";
 import { Cancel } from "@material-ui/icons";
 import axios from "axios";
 
-function SignIn({ isOpen, closeModal, openRe }) {
+function SignIn({ handleTriggerRefresh, isOpen, closeModal, openRe }) {
   const [showRegister, setshowRegister] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +48,13 @@ function SignIn({ isOpen, closeModal, openRe }) {
           setInvalidCredentials(false);
           setIsLoggedIn(true);
           closeModal(e, true);
+          localStorage.setItem("user", JSON.stringify(response.data));
+          handleTriggerRefresh();
+          if (!response.data.shop_name) {
+            axios
+              .post("http://localhost:3001/login", data)
+              .then((response) => {});
+          }
         }
       })
       .catch((err) => {
@@ -66,70 +73,99 @@ function SignIn({ isOpen, closeModal, openRe }) {
     <>
       {isLoggedIn && <Navigate to="/home" />}
       {isOpen && !showRegister && (
-        <>
-          <div>
-            <div className="signin_modal">
-              <div style={{ position: "fixed", right: -30, color: "black" }}>
-                <Cancel onClick={(e) => closeModal(e)}></Cancel>
-              </div>
-              <div className="signin__heading">
-                <h4>Sign in</h4>
-                <button
-                  onClick={(e) => {
-                    setshowRegister(true);
-                  }}
-                  className="signin__register_button"
-                >
-                  Register
-                </button>
-              </div>
-              <form
-                className="signin_form"
-                onSubmit={(e) => {
-                  loginHandler(e);
-                }}
-              >
-                <div className="form-group">
-                  <label htmlFor="email">Email Address</label>
-                  <br />
-                  <input
-                    type="email"
-                    className="email"
-                    id="email"
-                    placeholder="Enter email"
-                    onChange={emailChangeHandler}
-                    value={email}
-                    required
-                  />
+        <div class="modal" id="signInModel" role="dialog" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <form
+              onSubmit={(e) => {
+                loginHandler(e);
+              }}
+            >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <div
+                    style={{ diaplay: "flex", justifyContent: "space-between" }}
+                  >
+                    <div>
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Sign In
+                      </h5>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="close"
+                    onClick={closeModal}
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-group">
+                    <label for="recipient-name" class="col-form-label">
+                      Email Address:
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      placeholder="Enter email"
+                      onChange={emailChangeHandler}
+                      value={email}
+                      required
+                      className="form-control"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="message-text" class="col-form-label">
+                      Password:
+                    </label>
+                    <input
+                      onChange={passwordChangeHandler}
+                      value={password}
+                      type="password"
+                      id="password"
+                      placeholder="Password"
+                      className="form-control"
+                      required
+                    />
+                  </div>
+                  {/* <div className="forgot_password">
+                                        <p className="password_forgot">
+                                            Forgot your password?
+                                        </p>
+                                    </div> */}
                 </div>
 
-                <div className="htmlForm-group">
-                  <label htmlFor="password">Password</label>
-                  <br />
-                  <input
-                    onChange={passwordChangeHandler}
-                    value={password}
-                    type="password"
-                    className="password"
-                    id="password"
-                    placeholder="Password"
-                    required
-                  />
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-info"
+                    onClick={() => {
+                      console.log("onclick");
+                      setshowRegister(true);
+                    }}
+                  >
+                    Register
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Sign In
+                  </button>
                 </div>
-                <div className="forgot_password">
-                  <p className="password_forgot">Forgot your password?</p>
-                </div>
-                <button type="submit" className="btn btn-primary">
-                  Sign in
-                </button>
-              </form>
-            </div>
-            <div className="bg" onClick={(e) => closeModal(e)} />
+              </div>
+            </form>
           </div>
-        </>
+        </div>
       )}
       {showRegister && (
         <Register
+          handleTriggerRefresh={handleTriggerRefresh}
           isOpen={showRegister}
           closeModal={(e) => {
             setshowRegister(false);

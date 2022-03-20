@@ -5,9 +5,11 @@ import "./css/dashBoard.css";
 import { useCookies } from "react-cookie";
 import DashboardContext from "./Dashboard-context";
 import ItemOverviewPage from "./ItemOverviewPage";
+//import { env } from "process";
 function DashBoard({ loggedIn }) {
   var data = [];
   var [dashBoardData, setDashBoardData] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
   const [cookie, setCookie] = useState(undefined);
   const [dashboardRefresh, setDashboardRefresh] = useState(false);
   const [refresh, setRefresh] = useState(false);
@@ -15,6 +17,8 @@ function DashBoard({ loggedIn }) {
   const values = {
     dashboardRefresh,
     setDashboardRefresh,
+    cartCount,
+    setCartCount,
   };
 
   const handleRefresh = () => {
@@ -49,8 +53,8 @@ function DashBoard({ loggedIn }) {
           var dashBoardData_dummy = data.map((item) => {
             var ImageSrc =
               item.item_image === null
-                ? require("../images/item_image.avif")
-                : require(`../images/${item.item_image}`);
+                ? "http://localhost:3001/images/item_image.avif"
+                : `http://localhost:3001/images/${item.item_image}`;
             var dashBoardItem = (
               <DashBoardItem
                 key={item.item_id}
@@ -64,7 +68,9 @@ function DashBoard({ loggedIn }) {
                 handleRefresh={handleRefresh}
               />
             );
-
+            if (item.item_name === null) {
+              return null;
+            }
             return dashBoardItem;
           });
           setDashBoardData(dashBoardData_dummy);
@@ -84,8 +90,8 @@ function DashBoard({ loggedIn }) {
           var dashBoardData_dummy = data.map((item) => {
             var ImageSrc =
               item.item_image === null
-                ? require("../images/item_image.avif")
-                : require(`../images/${item.item_image}`);
+                ? "http://localhost:3001/images/item_image.avif"
+                : `http://localhost:3001/images/${item.item_image}`;
             console.log(ImageSrc);
             console.log(item);
             var dashBoardItem = (
@@ -101,7 +107,9 @@ function DashBoard({ loggedIn }) {
                 handleRefresh={handleRefresh}
               />
             );
-
+            if (item.item_name === null) {
+              return null;
+            }
             return dashBoardItem;
           });
           setDashBoardData(dashBoardData_dummy);

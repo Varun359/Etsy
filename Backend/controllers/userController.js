@@ -134,11 +134,26 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
             console.log("I am in token");
             console.log(token);
             user.token = token;
-
+            // var len = 0;
+            // var getItemToCartSql =
+            //   "select distinct etsy.items.*,shop_name,quantity from etsy.items,etsy.cart where etsy.items.item_id=etsy.cart.item_id and etsy.cart.user_id=" +
+            //   mysql.escape(req.user.user_id);
+            // connection.query(getItemToCartSql, (err, result) => {
+            //   if (err) {
+            //     res.send("Error while connecting database");
+            //   } else {
+            //     console.log(result);
+            //     len = result.length;
+            //   }
+            // });
+            // console.log(len);
             const data = {
               email: req.body.email,
               user_id: result[0].user_id,
               first_name: result[0].first_name,
+              shop_name: result[0].shop_name,
+              user_image: result[0].user_image,
+              shop_image: result[0].shop_image,
               token: token,
               //shops: shops,
             };
@@ -185,6 +200,9 @@ exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
         city: result[0].city,
         address: result[0].address,
         date: result[0].date,
+        shop_image: result[0].shop_image,
+        shop_name: result[0].shop_name,
+        user_image: result[0].user_image,
       });
     }
   });

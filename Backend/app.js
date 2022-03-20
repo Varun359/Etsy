@@ -10,6 +10,7 @@ var cors = require("cors");
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use("/profile", express.static("uploads/images"));
+app.use("/images", express.static("./images"));
 
 app.use(
   session({
@@ -32,11 +33,13 @@ app.use(fileUpload());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+// app.use(express.json());
 app.use("/", require("./routes/userRoutes"));
 app.use("/", require("./routes/shopRoutes"));
 app.use("/", require("./routes/itemRoutes"));
-app.use("/", require("./routes/imageRoutes"));
+//app.use("/", require("./routes/imageRoutes"));
+app.use("/", require("./routes/purchaseRoutes"));
+app.use("/", require("./routes/cartRoutes"));
 // app.use("/", require("./routes1/authentication"));
 // app.use("/", require("./routes1/registerRoute"));
 // app.use("/", require("./routes1/loginRoute"));
@@ -45,7 +48,7 @@ app.use("/", require("./routes/imageRoutes"));
 //app.use(errorMiddleware);
 const multer = require("multer");
 const storage = multer.diskStorage({
-  destination: "./uploads/images",
+  destination: "./images",
   filename: (req, file, callBack) => {
     return callBack(
       null,

@@ -6,7 +6,10 @@ import { useCookies, CookiesProvider } from "react-cookie";
 import { Edit, CameraAlt } from "@material-ui/icons";
 import "./css/editProfile.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 const EditProfile = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [gender, setGender] = useState("Rather Not say");
   const [city, setCity] = useState("");
@@ -14,6 +17,9 @@ const EditProfile = () => {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [about, setAbout] = useState("");
+  const [imageSrc, setImageSrc] = useState(
+    "https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"
+  );
   const [date, setDate] = useState(new Date());
   const [country, setCountry] = useState("United States");
   const options = useMemo(() => countryList().getData(), []);
@@ -51,7 +57,23 @@ const EditProfile = () => {
       .then((response) => {
         console.log("Status Code : ", response.status);
         if (response.status === 200) {
-          console.log(response);
+          axios
+            .get("http://localhost:3001/profile", {
+              headers: {
+                "auth-token": cookie.cookie.token,
+              },
+            })
+            .then((response) => {
+              console.log("Status Code : ", response.status);
+              if (response.status === 200) {
+                console.log(response);
+                localStorage.setItem("user", JSON.stringify(response.data));
+                navigate("/favorite");
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
           setUpdated(true);
         }
       })
@@ -78,8 +100,15 @@ const EditProfile = () => {
           setPhone(response.data.phone_no);
           setAddress(response.data.address);
           setAbout(response.data.about);
-          setDate(response.data.date);
+          if (response.data.date) {
+            setDate(new Date(response.data.date).toUTCString());
+          }
           setCountry(response.data.country);
+          if (response.data.user_image !== null) {
+            setImageSrc(
+              `http://localhost:3001/images/${response.data.user_image}`
+            );
+          }
         }
       })
       .catch((err) => {
@@ -90,10 +119,12 @@ const EditProfile = () => {
   }, []);
   const changeImage = (data) => {
     console.log(data);
+    const formData = new FormData();
+    formData.append("UserImage", data);
     axios
       .post(
-        "http://localhost:3001/updateProfileImage/" + cookie.cookie.user_id,
-        data,
+        `http://localhost:3001/updateProfileImage/` + cookie.cookie.user_id,
+        formData,
         {
           headers: {
             "content-Type": "multipart/form-data",
@@ -106,6 +137,9 @@ const EditProfile = () => {
         if (response.status === 200) {
           console.log(response);
           setUpdated(true);
+          setImageSrc(
+            `http://localhost:3001/images/${response.data.imageName}`
+          );
         }
       })
       .catch((err) => {
@@ -131,7 +165,8 @@ const EditProfile = () => {
             <img
               class="rounded-circle mt-5"
               width="150px"
-              src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"
+              alt="profile pic"
+              src={imageSrc}
             />
             <label class="editProfile__shop_icon">
               <input
@@ -151,7 +186,13 @@ const EditProfile = () => {
           </div>
         </div>
         <div class="col-md-5 border-right">
-          <div class="p-3 py-5">
+          <form
+            class="p-3 py-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateProfile();
+            }}
+          >
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h4 class="text-right">Your Public Profile</h4>
             </div>
@@ -253,7 +294,7 @@ const EditProfile = () => {
                   id="phone"
                   name="phone"
                   class="form-control"
-                  pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
+                  pattern="[0-9]{3}-[0-9]{4}-[0-9]{3}"
                   value={phone}
                   onChange={(e) => {
                     changeHandlerGeneric(e.target.value, setPhone);
@@ -300,10 +341,10 @@ const EditProfile = () => {
             </div>
 
             <div class="row mt-3">
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <label class="labels">Country</label>
                 <select
-                  className="form-select"
+                  className="form-select custom-select"
                   value={country}
                   onChange={(e) => {
                     console.log(e.target.value);
@@ -315,15 +356,11 @@ const EditProfile = () => {
               </div>
             </div>
             <div class="mt-5 text-center">
-              <button
-                class="btn btn-primary profile-button"
-                type="button"
-                onClick={updateProfile}
-              >
+              <button class="btn btn-primary profile-button" type="submit">
                 Save Profile
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
