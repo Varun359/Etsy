@@ -2,11 +2,12 @@ var express = require("express");
 var mysql = require("mysql");
 const { addListener } = require("./database");
 //const { createConnection } = require("net");
+const cors = require("cors");
 
 var connection = require("./database");
 
 const app = require("./app");
-
+app.use(cors());
 // var bodyParser = require("body-parser");
 
 /*app.get('/',(req,res) => {
