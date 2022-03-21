@@ -186,7 +186,20 @@ exports.editShopItem = asyncErrorHandler(async (req, res) => {
   //  +
   // " and user_id=" +
   // mysql.escape(req.user.user_id);
-
+  var updateQuantitySql =
+    "update etsy.items set item_quantity = item_quantity+" +
+    mysql.escape(req.body.quantity) +
+    " where item_id=" +
+    mysql.escape(req.params.item_id);
+  console.log(updateQuantitySql);
+  console.log(req.body.item_quantity);
+  connection.query(updateQuantitySql, (err, result) => {
+    if (err) {
+      res.send("Error while connecting database");
+    } else {
+      console.log("items table updated");
+    }
+  });
   console.log(editShopItemSql);
   connection.query(editShopItemSql, (err, result) => {
     if (err) {
