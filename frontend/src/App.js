@@ -10,38 +10,40 @@ import EditProfile from "./Components/EditProfile";
 import Shop from "./Components/Shop";
 import CartDashboard from "./Components/CartDashboard";
 import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    Navigate,
 } from "react-router-dom";
 import ItemOverviewPage from "./Components/ItemOverviewPage";
 import CreateShop from "./Components/CreateShop";
 import SearchDashBoard from "./Components/SearchDashBoard";
 import PurchaseDashboard from "./Components/PurchaseDashboard";
 function App() {
-  return (
-    <>
-      <Router>
-        <Routes>
-          <Route path="/home" element={<Home></Home>} />
-          <Route path="/item/:id" element={<ItemOverviewPage />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/signIn" element={<SignIn />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/favorite" element={<Favorite />} />
-          <Route path="/editProfile" element={<EditProfile />} />
-          <Route path="/shop/:user_id" element={<Shop />} />
-          <Route path="/createshop" element={<CreateShop />} />
-          <Route path="/cartitems" element={<CartDashboard />} />
-          <Route path="/purchases" element={<PurchaseDashboard />} />
-          <Route path="/search/:search" element={<SearchDashBoard />} />
-          <Route path="/" element={<Home />}></Route>
-        </Routes>
-      </Router>
-    </>
-  );
+    return (
+        <>
+            <Router>
+                <Routes>
+                    <Route path="/item/:id" element={<ItemOverviewPage />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/welcome" element={<Welcome />} />
+                    <Route path="/signIn" element={<SignIn />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/favorite" element={<Favorite />} />
+                    <Route path="/editProfile" element={<EditProfile />} />
+                    <Route path="/shop/:user_id" element={<Shop />} />
+                    <Route path="/createshop" element={<CreateShop />} />
+                    <Route path="/cartitems" element={<CartDashboard />} />
+                    <Route path="/purchases" element={<PurchaseDashboard />} />
+                    <Route
+                        path="/search/:search"
+                        element={<SearchDashBoard />}
+                    />
+                    <Route path="/" element={<Home />}></Route>
+                </Routes>
+            </Router>
+        </>
+    );
 }
 
 export default App;

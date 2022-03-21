@@ -24,6 +24,7 @@ function NavBar({ callBack }) {
     const [showProfileLists, setShowProfileLists] = useState(false);
     const [search, setSearch] = useState("");
     const [count, setCount] = useState(0);
+    const [navLogin, setNavLogin] = useState("");
 
     const [triggerRefresh, setTriggerRefresh] = useState(false);
 
@@ -50,113 +51,87 @@ function NavBar({ callBack }) {
         removeCookie("cookie");
         // dispatch(logout());
         localStorage.removeItem("user");
-        localStorage.removeItem("shop");
         setIsLoggedIn(false);
+        handleTriggerRefresh();
         navigate("/");
     };
-
-    const [name, setName] = useState("");
-
-    useEffect(() => {
-        let user = JSON.parse(localStorage.getItem("user") || null);
-        if (user) {
-            setName(user.first_name);
-            //   if (isloggedIn || user !== undefined) {
-            //     axios
-            //       .get("http://localhost:3001/CartItems", {
-            //         headers: {
-            //           "content-Type": "application/json",
-            //           "auth-token": cookie.cookie.token,
-            //         },
-            //       })
-            //       .then((response) => {
-            //         console.log("Status Code : ", response.status);
-            //         if (response.status === 200) {
-            //           console.log(response.data);
-            //           setCount(response.data.length);
-            //           navigate("/");
-            //           console.log("count", count);
-            //         }
-            //       })
-            //       .catch((err) => {
-            //         console.log(err);
-            //       });
-            //   }
-        }
-        // setProfileImg(user.user_image);
-        // setShopImage(user.shop_image);
-    }, [triggerRefresh]);
 
     const handleOnClickCart = () => {
         console.log("inside onclick");
         navigate("/cartitems");
     };
-    var user = cookie.cookie;
-    console.log("usercookie", user);
-    let navLogin = null;
 
-    if (isloggedIn || user !== undefined) {
-        navLogin = (
-            <ul className="icons">
-                <li className="signin__icon" onClick={handleFavoriteClick}>
-                    <FavoriteBorderSharp />
-                </li>
-
-                <div className="dropdown">
-                    <li
-                        onClick={showProfileList}
-                        className="signin__icon dropbtn  "
-                    >
-                        <Person />
+    useEffect(() => {
+        let user = JSON.parse(localStorage.getItem("user"));
+        let name = "";
+        if (user) {
+            console.log(user);
+            name = user.first_name;
+        }
+        if (isloggedIn || user) {
+            setNavLogin(
+                <ul className="icons">
+                    <li className="signin__icon" onClick={handleFavoriteClick}>
+                        <FavoriteBorderSharp />
                     </li>
-                    <div class="dropdown-content">
-                        <p
-                            onClick={() => {
-                                navigate("/favorite");
-                            }}
+
+                    <div className="dropdown">
+                        <li
+                            onClick={showProfileList}
+                            className="signin__icon dropbtn  "
                         >
-                            {name}
-                        </p>
-                        <p
-                            onClick={() => {
-                                navigate("/purchases");
-                            }}
-                        >
-                            Purchases
-                        </p>
-                        <p
-                            onClick={() => {
-                                logoutHandler();
-                            }}
-                        >
-                            sign out
-                        </p>
+                            <Person />
+                        </li>
+                        <div class="dropdown-content">
+                            <p
+                                onClick={() => {
+                                    navigate("/favorite");
+                                }}
+                            >
+                                {name}
+                            </p>
+                            <p
+                                onClick={() => {
+                                    navigate("/purchases");
+                                }}
+                            >
+                                Purchases
+                            </p>
+                            <p
+                                onClick={() => {
+                                    logoutHandler();
+                                }}
+                            >
+                                sign out
+                            </p>
+                        </div>
                     </div>
-                </div>
-                {/* <Badge badgeContent={parseInt(count)} color="primary"> */}
-                <li
-                    onClick={(e) => {
-                        handleOnClickCart(e);
-                    }}
-                    className="signin__icon"
-                >
-                    <ShoppingCart />
-                </li>
-                {/* </Badge> */}
-            </ul>
-        );
-    } else {
-        navLogin = (
-            <ul className="icons my-2">
-                <li className="signin__login" onClick={popUpSignIn}>
-                    Login
-                </li>
-                <li className="signin__icon">
-                    <ShoppingCart />
-                </li>
-            </ul>
-        );
-    }
+                    {/* <Badge badgeContent={parseInt(count)} color="primary"> */}
+                    <li
+                        onClick={(e) => {
+                            handleOnClickCart(e);
+                        }}
+                        className="signin__icon"
+                    >
+                        <ShoppingCart />
+                    </li>
+                    {/* </Badge> */}
+                </ul>
+            );
+        } else {
+            setNavLogin(
+                <ul className="icons my-2">
+                    <li className="signin__login" onClick={popUpSignIn}>
+                        Login
+                    </li>
+                    <li className="signin__icon">
+                        <ShoppingCart />
+                    </li>
+                </ul>
+            );
+        }
+    }, [triggerRefresh]);
+
     return (
         <div className="navBar__div my-2">
             <header className="navBar">
@@ -202,17 +177,12 @@ function NavBar({ callBack }) {
                                 callBack();
                             }
                         }
-                        // navigate("/home");
                     }}
                     openRegister={(e) => {
                         setshowSignIn(false);
                     }}
                 ></SignIn>
             )}
-
-            {/* {showProfileLists && ( */}
-            {/* // <ProfileList setShowProfileLists={setShowProfileLists} /> */}
-            {/* // )} */}
         </div>
     );
 }

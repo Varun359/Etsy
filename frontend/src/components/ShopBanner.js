@@ -48,6 +48,7 @@ function ShopBanner({ sales = 0, owner, user_id }) {
             .catch((err) => {
                 console.log(err);
             });
+
         // setProfileImg(user.user_image);
         // setShopImage(user.shop_image);
     }, []);
@@ -131,7 +132,9 @@ function ShopBanner({ sales = 0, owner, user_id }) {
             </div>
             <div
                 onClick={() => {
-                    navigate("/favorite");
+                    if (owner) {
+                        navigate("/favorite");
+                    }
                 }}
                 className="shopBanner__main"
             >

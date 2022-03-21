@@ -9,6 +9,7 @@ import { BASE_URL } from "../variables";
 function ShopAddItem({ isOpen, closeModal, setLoginStatus }) {
     const [itemName, setItemName] = useState("");
     const [category, setCategory] = useState("");
+    const [customCategory, setCustomCategory] = useState("");
     const [itemDesc, setItemDesc] = useState("");
     const [price, setPrice] = useState("");
     const [quantity, setQuantity] = useState("");
@@ -27,7 +28,7 @@ function ShopAddItem({ isOpen, closeModal, setLoginStatus }) {
         console.log(cookie);
         const data = {
             itemName: itemName,
-            category: category,
+            category: category !== "Custom" ? category : customCategory,
             itemDesc: itemDesc,
             price: price,
             quantity: quantity,
@@ -147,6 +148,29 @@ function ShopAddItem({ isOpen, closeModal, setLoginStatus }) {
                                             </option>
                                         </select>
                                     </div>
+                                    {category === "Custom" && (
+                                        <div class="form-group">
+                                            <label
+                                                for="recipient-name"
+                                                class="col-form-label"
+                                            >
+                                                Enter Category:
+                                            </label>
+                                            <input
+                                                value={customCategory}
+                                                onChange={(e) => {
+                                                    changeHandlerGeneric(
+                                                        e.target.value,
+                                                        setCustomCategory
+                                                    );
+                                                }}
+                                                type="text"
+                                                placeholder="Enter Category"
+                                                class="form-control"
+                                                id="custom-category"
+                                            />
+                                        </div>
+                                    )}
                                     <div class="form-group">
                                         <label
                                             for="message-text"

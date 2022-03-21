@@ -72,7 +72,7 @@ function SignIn({ handleTriggerRefresh, isOpen, closeModal, openRe }) {
 
     return (
         <>
-            {isLoggedIn && <Navigate to="/home" />}
+            {isLoggedIn && <Navigate to="/" />}
             {isOpen && !showRegister && (
                 <div
                     class="modal"
