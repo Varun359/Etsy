@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 var connection = require("../database");
-
+const User = require("../models/userModel");
 const auth = require("../middlewares/auth");
 const express = require("express");
 const {
@@ -18,6 +18,7 @@ const {
 
 const multer = require("multer");
 const { get } = require("./itemRoutes");
+const { default: mongoose } = require("mongoose");
 
 const storage = multer.diskStorage({
   destination: (req, file, callBack) => {
@@ -50,7 +51,7 @@ router.route("/shopItems/:user_id").get(auth, getShopItemsById);
 router.route("/insertItems").post(auth, insertIntoShop);
 router.route("/checkShop").post(auth, checkShopName);
 router.route("/changeShopName").get(auth, changeShopName);
-router.route("/editShopItem/:item_id").post(auth, editShopItem);
+router.route("/editShopItem/:item_id").get(auth, editShopItem);
 router.route("/shopDetails").get(auth, getShopDetails);
 router.route("/shopDetailsById/:user_id").get(auth, getShopDetailsById);
 router.route("/createShop").post(auth, createShop);
@@ -79,7 +80,7 @@ router.route("/updateShopImage").post(
       res.send("failed!");
     }
   },
-  (req, res, next) => {
+  async (req, res, next) => {
     var userId = req.user.user_id;
     console.log(req.files);
 
@@ -87,24 +88,24 @@ router.route("/updateShopImage").post(
     if (req.files.length !== 0) {
       imageName = `${Date.now()}_${req.files.ShopImage.name}`;
       req.files.ShopImage.mv(`./images/${imageName}`);
-      var updateImageSql =
-        "update etsy.users set shop_image = " +
-        mysql.escape(imageName) +
-        " where user_id = " +
-        mysql.escape(userId);
-      console.log(updateImageSql);
-      connection.query(updateImageSql, (err, result) => {
-        if (err) {
-          res.send("Error while connecting database");
-        } else {
-          console.log(result);
-          res.json({
-            imageName,
-          });
+      console.log(imageName);
+      console.log(req.user.user_id);
+      const doc = await User.findByIdAndUpdate(
+        req.user.user_id,
+        {
+          shop_image: imageName,
+        },
+        {
+          new: true,
         }
-      });
-    } else {
-      res.send("please select an image");
+      );
+      // const doc = await User.find({
+      //   _id: mongoose.Types.ObjectId(req.user.user_id),
+      // });
+      // doc.shop_image = imageName;
+      // await doc[0].save();
+      console.log(doc);
+      res.send(doc);
     }
   }
 );
