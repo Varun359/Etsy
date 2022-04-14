@@ -1,185 +1,212 @@
+const { default: mongoose } = require("mongoose");
 const mysql = require("mysql");
 const { rawListeners } = require("../database");
 var connection = require("../database");
 const asyncErrorHandler = require("../middlewares/asyncErrorHandler");
-
-// exports.changeItem = asyncErrorHandler(async(req,res) =>{
-//     console.log("inside change Item api");
-//     var changeItem =
-//       "update etsy.items set is_changed = false where etsy.items.shop_id = (select shop_id " ;
-// })
+const userFavorites = require("../models/userFavoritesModel");
+const Item = require("../models/itemModel");
 
 //get favorites from the shop
 exports.getFavoriteItems = asyncErrorHandler(async (req, res) => {
-  console.log("Inside get fevorites");
-  var getFavoritesSql =
-    "select distinct item_name,item_category,item_desc,item_price,item_quantity,item_image,sales_count,etsy.items.user_id,etsy.user_favorites.item_id from etsy.items,etsy.user_favorites where etsy.items.item_id = etsy.user_favorites.item_id and etsy.user_favorites.user_id=" +
-    mysql.escape(req.user.user_id);
-
-  console.log(getFavoritesSql);
-  connection.query(getFavoritesSql, (err, result) => {
-    if (err) {
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      res.send(result);
+  console.log("Inside get favorite Items");
+  const documents = await userFavorites
+    .find({ user: mongoose.Types.ObjectId(req.user.user_id) })
+    .populate("item user");
+  let data = [];
+  if (documents.length) {
+    for (let doc of documents) {
+      data.push({
+        user_id: doc.user._id,
+        item_id: doc.item._id,
+        item_name: doc.item.item_name,
+        item_price: parseFloat(doc.item.item_price),
+        item_desc: doc.item.item_desc,
+        item_quantity: doc.item.item_quantity,
+        item_category: doc.item.item_category,
+        item_image: doc.item.item_image,
+        sales_count: doc.item.sales_count,
+        shop_name: doc.user.shop_name,
+      });
     }
-  });
+  }
+  console.log(documents);
+  res.send(data);
 });
 
 //get all items
 exports.getAllItems = asyncErrorHandler(async (req, res) => {
-  console.log("Inside get all items");
-  var getAllItemsSql =
-    " select item_id,item_name,item_category,item_desc,item_price,item_quantity,item_image,sales_count,etsy.users.user_id,etsy.users.shop_name from etsy.users,etsy.items where etsy.users.user_id = etsy.items.user_id";
-  console.log(getAllItemsSql);
-  connection.query(getAllItemsSql, (err, result) => {
-    if (err) {
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      res.send(result);
+  console.log("inside get all items");
+  const doc = await Item.find().populate("user");
+  let data = [];
+  if (doc.length) {
+    for (let item of doc) {
+      data.push({
+        user_id: item.user._id,
+        item_name: item.item_name,
+        item_price: parseFloat(item.item_price),
+        item_desc: item.item_desc,
+        item_quantity: item.item_quantity,
+        item_category: item.item_category,
+        item_image: item.item_image ? item.item_image : null,
+        sales_count: item.sales_count,
+        shop_name: item.user.shop_name,
+      });
     }
-  });
+  }
+
+  console.log(doc);
+  res.send(data);
 });
 
 //add favorites
 exports.addFavorites = asyncErrorHandler(async (req, res) => {
-  console.log("Inside add favorites ");
-  var itemId = req.params.item_id;
-
-  var addFavoritesSQL =
-    "insert into etsy.user_favorites (user_id,item_id) values (" +
-    mysql.escape(req.user.user_id) +
-    "," +
-    mysql.escape(itemId) +
-    ")";
-  connection.query(addFavoritesSQL, (err, result) => {
-    if (err) {
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      res.json({ message: "Item Added to user Favorites" });
-    }
+  const doc = await userFavorites.create({
+    user: mongoose.Types.ObjectId(req.user.user_id),
+    item: mongoose.Types.ObjectId(req.params.item_id),
   });
+
+  res.send(doc ? doc : "No document");
 });
 
 //Remove Favorites
 exports.removeFavorites = asyncErrorHandler(async (req, res) => {
-  console.log("Inside Remove favorites ");
-  var itemId = req.params.item_id;
-
-  var removeFavoritesSQL =
-    "DELETE FROM etsy.user_favorites WHERE etsy.user_favorites.user_id = " +
-    mysql.escape(req.user.user_id) +
-    " and etsy.user_favorites.item_id=" +
-    mysql.escape(itemId);
-  connection.query(removeFavoritesSQL, (err, result) => {
-    if (err) {
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      res.json({ message: "Item Removed from user Favorites" });
-    }
+  const doc = await userFavorites.remove({
+    user: mongoose.Types.ObjectId(req.user.user_id),
+    item: mongoose.Types.ObjectId(req.params.item_id),
   });
+  console.log(doc);
+  res.send("Item Removed from favories");
 });
 
 //get elements by id with favorites
 exports.getAllItemsById = asyncErrorHandler(async (req, res) => {
-  console.log("Inside get all elements by items");
-  var resultData = [];
-  var getAllItemsFavSql =
-    "select * from etsy.items where item_id in (SELECT item_id FROM etsy.user_favorites where user_id =" +
-    mysql.escape(req.user.user_id) +
-    ")";
-  connection.query(getAllItemsFavSql, (err, result) => {
-    if (err) {
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      result.map((item) => {
-        item["is_favorite"] = true;
-        resultData.push(item);
-      });
-    }
+  console.log("Inside get all elements by id with favs");
+  var fav_data = [];
+  var un_fav = [];
+  const fav_documents = await userFavorites.find({
+    user: mongoose.Types.ObjectId(req.user.user_id),
   });
-  var getAllItemsNotFavSql =
-    "select * from etsy.items where item_id not in (SELECT item_id FROM etsy.user_favorites where user_id =" +
-    mysql.escape(req.user.user_id) +
-    ")";
-  connection.query(getAllItemsNotFavSql, (err, result) => {
-    if (err) {
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      result.map((item) => {
-        item["is_favorite"] = false;
-        resultData.push(item);
-      });
-      res.send(resultData);
+  let items = [];
+  fav_documents.map((doc) => items.push(doc.item.toString()));
+
+  const all_fav = await Item.find().lean();
+
+  if (all_fav.length) {
+    for (let doc of all_fav) {
+      if (items.includes(doc._id.toString())) {
+        fav_data.push({
+          user_id: doc.user,
+          item_id: doc._id,
+          item_name: doc.item_name,
+          item_price: parseFloat(doc.item_price),
+          item_desc: doc.item_desc,
+          item_quantity: doc.item_quantity,
+          item_category: doc.item_category,
+          item_image: doc.item_image ? doc.item_image : null,
+          sales_count: doc.sales_count,
+          is_Favorite: true,
+          //is_Favorite: items.includes(doc._id.toString()) ? true : false,
+        });
+      } else {
+        un_fav.push({
+          user_id: doc.user,
+          item_id: doc._id,
+          item_name: doc.item_name,
+          item_price: parseFloat(doc.item_price),
+          item_desc: doc.item_desc,
+          item_quantity: doc.item_quantity,
+          item_category: doc.item_category,
+          item_image: doc.item_image ? doc.item_image : null,
+          sales_count: doc.sales_count,
+          is_Favorite: false,
+          // is_Favorite: items.includes(doc._id.toString()) ? true : false,
+        });
+      }
     }
-  });
+  }
+  fav_data = [...fav_data, ...un_fav];
+  console.log(all_fav);
+
+  res.send(fav_data);
 });
 
 //Search Items
 exports.searchItems = asyncErrorHandler(async (req, res) => {
-  console.log("Inside search items by search");
-  var searchItemsSql =
-    " select item_id,item_name,item_category,item_desc,item_price,item_quantity,item_image,sales_count from etsy.items where item_name like '%" +
-    req.params.search +
-    "%' or item_category like '%" +
-    req.params.search +
-    "%' or item_desc like '%" +
-    req.params.search +
-    "%'";
-  console.log(searchItemsSql);
-  connection.query(searchItemsSql, (err, result) => {
-    if (err) {
-      console.log(err);
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      res.send(result);
-    }
+  const searchTerm = new RegExp(req.params.search, "i");
+  const doc = await Item.find({
+    $or: [
+      {
+        item_name: { $regex: searchTerm },
+      },
+      {
+        item_category: { $regex: searchTerm },
+      },
+      {
+        item_desc: { $regex: searchTerm },
+      },
+    ],
   });
+  console.log(req.params);
+  res.send(doc?.length ? doc : "No Search Results");
 });
 
 //Search Favorites
 exports.searchFavoriteItems = asyncErrorHandler(async (req, res) => {
-  console.log("Inside favorite items by search");
-  var searchFavItemsSql =
-    "select distinct etsy.items.item_id,item_name,item_category,item_desc,item_price,item_quantity,item_image,sales_count from etsy.items,etsy.user_favorites where etsy.items.item_id=etsy.user_favorites.item_id and (item_name like '%" +
-    req.params.search +
-    "%' or item_desc like '%" +
-    req.params.search +
-    "%' or item_category like '%" +
-    req.params.search +
-    "%')";
-  console.log(searchFavItemsSql);
-  connection.query(searchFavItemsSql, (err, result) => {
-    if (err) {
-      console.log(err);
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      res.send(result);
-    }
-  });
+  const search_term = new RegExp(req.params.search, "i");
+  const doc = await userFavorites.aggregate([
+    {
+      $match: {
+        user: mongoose.Types.ObjectId(req.user.user_id),
+      },
+    },
+    {
+      $lookup: {
+        from: "items",
+        localField: "item",
+        foreignField: "_id",
+        as: "item",
+      },
+    },
+    {
+      $unwind: {
+        path: "$item",
+      },
+    },
+    {
+      $match: {
+        $or: [
+          {
+            "item.item_name": search_term,
+          },
+          {
+            "item.item_category": search_term,
+          },
+          {
+            "item.item_desc": search_term,
+          },
+        ],
+      },
+    },
+  ]);
+  console.log(doc);
+  res.send(doc?.length ? doc : "No Search Results");
 });
 
 //get item details by item id
 exports.getItemDetails = asyncErrorHandler(async (req, res) => {
-  console.log("get item details by item id");
-  var getItemByIdSql =
-    "select etsy.items.*,etsy.users.shop_name from etsy.items,etsy.users where etsy.users.user_id=etsy.items.user_id and etsy.items.item_id=" +
-    mysql.escape(req.params.item_id);
-  console.log(getItemByIdSql);
-  connection.query(getItemByIdSql, (err, result) => {
-    if (err) {
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      res.send(result);
-    }
-  });
+  const doc = await Item.findById(req.params.item_id).populate("user");
+  let data = {
+    item_id: doc._id,
+    item_name: doc.item_name,
+    item_price: parseFloat(doc.item_price),
+    item_desc: doc.item_desc,
+    item_quantity: doc.item_quantity,
+    item_category: doc.item_category,
+    item_image: doc.item_image ? doc.item_image : null,
+    sales_count: doc.sales_count,
+    shop_name: doc.user.shop_name,
+  };
+  console.log(data);
+  console.log(doc);
+  res.send(data);
 });
