@@ -1,14 +1,14 @@
 const auth = require("../middlewares/auth");
 const express = require("express");
 const {
-    getFavoriteItems,
-    getAllItems,
-    addFavorites,
-    removeFavorites,
-    getAllItemsById,
-    searchItems,
-    searchFavoriteItems,
-    getItemDetails,
+  getFavoriteItems,
+  getAllItems,
+  addFavorites,
+  removeFavorites,
+  getAllItemsById,
+  searchItems,
+  searchFavoriteItems,
+  getItemDetails,
 } = require("../controllers/itemController");
 const router = express.Router();
 
