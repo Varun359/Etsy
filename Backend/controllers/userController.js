@@ -120,48 +120,6 @@ exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-// //check Token
-// exports.checkToken = asyncErrorHandler(async (req, res, next) => {
-//   try {
-//     const token = req.header("auth-token");
-//     if (!token) {
-//       return res.json(false);
-//     }
-
-//     const verified = jwt.verify(token, "secret123");
-//     if (!verified) {
-//       return res.send(false);
-//     }
-
-//     console.log(req.user);
-//     var getUserId =
-//       "select * from etsy.users where user_id=" +
-//       mysql.escape(req.user.user_id);
-
-//     connection.query(getUserId, (err, result) => {
-//       if (!result) {
-//         return res.send(false);
-//       }
-//       return res.send(true);
-//     });
-//   } catch (err) {
-//     res.status(500).send({ msg: "Hi", err });
-//   }
-// });
-
-// // Logout User
-// exports.logoutUser = asyncErrorHandler(async (req, res, next) => {
-//   res.cookie("auth-token", null, {
-//     expires: new Date(Date.now()),
-//     httpOnly: true,
-//   });
-
-//   res.status(200).json({
-//     success: true,
-//     message: "Logged Out",
-//   });
-// });
-
 // Update User Profile ( should also show user profile)
 exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
   const newData = {
