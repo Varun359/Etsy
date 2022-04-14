@@ -2,118 +2,75 @@ const mysql = require("mysql");
 var connection = require("../database");
 const asyncErrorHandler = require("../middlewares/asyncErrorHandler");
 const { put } = require("../routes/userRoutes");
-
-//purchasing items
+const Order = require("../models/orderModel");
+const Purchase = require("../models/purchasesModel");
+const { default: mongoose } = require("mongoose");
+const Item = require("../models/itemModel");
+const Cart = require("../models/cartModel");
 exports.purchasingItems = asyncErrorHandler(async (req, res) => {
-  console.log(req.user);
-  console.log("inside purchasing items");
+  console.log(req.body);
+  const doc1 = await Order.create({ date: req.body.dateOfPurchase });
 
-  console.log(req.body.dateOfPurchase);
-  //console.log(req.body.items[0].item_id);
-
-  var insertOrderSql =
-    "insert into etsy.orders (dateOfPurchase) values (" +
-    mysql.escape(req.body.dateOfPurchase) +
-    ")";
-
-  connection.query(insertOrderSql, (err, result) => {
-    if (err) {
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      let order_id = result.insertId;
-      console.log(order_id);
-      console.log("Orders table updated");
-
-      var listOfItems;
-      var putPurchaseSql =
-        "insert into etsy.purchases (order_id,item_id,quantity_buyed,price_buyed,shop_name,item_name,item_image,user_id) values ";
-
-      items = req.body.items;
-      items.forEach((item, index) => {
-        console.log(item.item_id);
-        console.log(item.quantity);
-        if (index != 0) {
-          listOfItems =
-            listOfItems +
-            ",(" +
-            mysql.escape(order_id) +
-            "," +
-            mysql.escape(item.item_id) +
-            "," +
-            mysql.escape(item.quantity) +
-            "," +
-            mysql.escape(item.item_price) +
-            "," +
-            mysql.escape(item.shop_name) +
-            "," +
-            mysql.escape(item.item_name) +
-            "," +
-            mysql.escape(item.item_image) +
-            "," +
-            mysql.escape(req.user.user_id) +
-            ")";
-        } else {
-          listOfItems =
-            "(" +
-            mysql.escape(order_id) +
-            "," +
-            mysql.escape(item.item_id) +
-            "," +
-            mysql.escape(item.quantity) +
-            "," +
-            mysql.escape(item.item_price) +
-            "," +
-            mysql.escape(item.shop_name) +
-            "," +
-            mysql.escape(item.item_name) +
-            "," +
-            mysql.escape(item.item_image) +
-            "," +
-            mysql.escape(req.user.user_id) +
-            ")";
-        }
-        var updateQuantitySql =
-          "update etsy.items set item_quantity = item_quantity-" +
-          mysql.escape(item.quantity) +
-          " where item_id=" +
-          mysql.escape(item.item_id);
-        console.log(updateQuantitySql);
-        connection.query(updateQuantitySql, (err, result) => {
-          if (err) {
-            res.send("Error while connecting database");
-          } else {
-            console.log("items table updated");
-          }
-        });
+  if (doc1) {
+    let items = [];
+    for (let item of req.body.items) {
+      items.push({
+        order: doc1._id,
+        item: mongoose.Types.ObjectId(item.item_id),
+        user: mongoose.Types.ObjectId(req.user.user_id),
+        quantity_buyed: item.quantity,
+        price_buyed: parseFloat(item.quantity * item.item_price),
+        shop_name: item.shop_name,
+        item_name: item.item_name,
+        item_image: item.item_image,
       });
-      putPurchaseSql = putPurchaseSql + listOfItems;
-      connection.query(putPurchaseSql, (err, result) => {
-        if (err) {
-          res.send("Error while connecting database");
-        } else {
-          console.log("puchases table updated");
-        }
-      });
-      // console.log(putPurchaseSql);
     }
-    res.end();
-  });
+    let purchaseDocuments = await Purchase.insertMany(items);
+
+    //Removing quantity purchased from the items.
+    for (let item of req.body.items) {
+      let itemDocument = await Item.find({
+        _id: mongoose.Types.ObjectId(item.item_id),
+      });
+      console.log(itemDocument);
+      // if (itemDocument) {
+      itemDocument[0].item_quantity =
+        itemDocument[0].item_quantity - parseInt(item.quantity);
+      await itemDocument[0].save();
+      // }
+    }
+
+    let deletedCart = await Cart.deleteMany({
+      user: mongoose.Types.ObjectId(req.user.user_id),
+    });
+    res.send("success");
+  }
 });
 
 //get previous orders
 exports.getPreviousOrders = asyncErrorHandler(async (req, res) => {
-  console.log("inside get previous orders");
-  var getItemByIdSql =
-    "select distinct * from etsy.purchases P,etsy.orders O where P.order_id=O.order_id and P.user_id =" +
-    mysql.escape(req.user.user_id);
-  console.log(getItemByIdSql);
-  connection.query(getItemByIdSql, (err, result) => {
-    if (err) {
-      res.send("Error while connecting database");
-    } else {
-      console.log(result);
-      res.send(result);
+  var doc = await Purchase.find({
+    user: mongoose.Types.ObjectId(req.user.user_id),
+  })
+    .populate("order")
+    .lean();
+
+  let data = [];
+  if (doc.length) {
+    for (let item of doc) {
+      data.push({
+        item_id: item.item,
+        user_id: item.user,
+        order_id: item.order._id,
+        quantity_buyed: item.quantity_buyed,
+        price_buyed: parseFloat(item.price_buyed),
+        item_name: item.item_name,
+        item_image: item.item_image,
+        date: item.order.date,
+        shop_name: item.shop_name,
+      });
     }
-  });
+  }
+  console.log(doc);
+  res.send(data);
 });
