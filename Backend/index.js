@@ -24,10 +24,12 @@ app.use(cors());
 // app.use("/", require("./routes/loginRoute"));
 // app.use("/", require("./routes/userProfileRoute"));
 
+connection();
+
 app.listen(3001, () => {
   console.log("App listening on port 3001");
-  connection.connect(function (err) {
-    if (err) throw err;
-    console.log("database connected");
-  });
+  // connection.connect(function (err) {
+  //   if (err) throw err;
+  //   console.log("database connected");
+  // });
 });

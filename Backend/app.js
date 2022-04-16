@@ -8,7 +8,7 @@ const app = express();
 var session = require("express-session");
 var cors = require("cors");
 
-app.use(cors({ origin: "http://54.166.117.163:3000", credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use("/profile", express.static("uploads/images"));
 app.use("/images", express.static("./images"));
 
