@@ -26,7 +26,8 @@ function CartItems() {
   const [quantity, setQuantity] = useState(1);
   const [cookie, setCookie] = useCookies(["cookie"]);
   const [items, setItems] = useState([]);
-
+  const [isChecked, setIsChecked] = useState(false);
+  const [gift, setGift] = useState("");
   useEffect(() => {
     console.log(cartItems);
     if (cartItems.length === 0) {
@@ -178,15 +179,33 @@ function CartItems() {
                   -
                 </button>
               </span>
-
               <h5 className="mr-2">Quantity - {item.quantity}</h5>
               <div>
                 <input
                   type="checkbox"
+                  value={isChecked}
                   id="check"
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    setIsChecked(e.target.value);
+                  }}
                   style={{ marginBottom: "26px" }}
                 />
-                <label for="check"> Send a gift</label>
+                <label for="check"> Add a gift</label>
+                {isChecked && (
+                  <div>
+                    <textarea
+                      id="item_desc"
+                      placeholder="send the gift"
+                      rows="1"
+                      cols="30"
+                      value={gift}
+                      onChange={(e) => {
+                        setGift(e.target.value);
+                      }}
+                    ></textarea>
+                  </div>
+                )}
               </div>
             </div>
             <div>

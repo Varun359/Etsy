@@ -41,33 +41,14 @@ export const cartItemsSlice = createSlice({
           state.cartItems[itemIndex].quantity - 1;
     },
 
-    // createCartItem: (state, action) => {
-    //   const exist = state.cartItems.findIndex(
-    //     (ele) => ele.item_id === action.payload.item_id
-    //   );
-    //   console.log(exist + "----------------------------: exist");
-    //   if (exist !== -1) {
-    //     state.cartItems[exist] = {
-    //       ...state.cartItems[exist],
-    //       ...action.payload,
-    //     };
-    //   } else {
-    //     state.cartItems.push(action.payload);
-    //   }
-    // },
-    // removeCartItem: (state, action) => {
-    //   console.log("----------------------------: deleted" + action.payload);
-    //   let index = state.cartItems.findIndex(
-    //     ({ id }) => id === action.payload.item_id
-    //   );
-    //   state.cartItems.splice(index, 1);
-    //   // state.cartItems.splice(action.payload, 1);
-    //   // const item = state.cartItems.filter(
-    //   //   (ele) => ele.itemId === action.payload
-    //   // );
-    //   //   state.cartProducts = null;
-    //   // console.log(item + "----------------------------: deleted");
-    // },
+    deleteCartItem: (state, action) => {
+      const itemIndex = state.cartItems.findIndex(
+        (ele) => ele.item_id === action.payload.item_id
+      );
+
+      state.cartItems.splice(itemIndex, 1);
+    },
+
     clearCart: (state) => {
       state.cartItems = [];
     },
@@ -82,6 +63,7 @@ export const {
   addAllCartItems,
   addCartItemQuantity,
   deleteCartItemQuantity,
+  deleteCartItem,
 } = cartItemsSlice.actions;
 
 export const getCartItems = (state) => state.cartItem.cartItems;
