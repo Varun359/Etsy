@@ -8,410 +8,396 @@ import "./css/editProfile.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../variables";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser, updateUserDetails } from "../features/userSlice";
 
 const EditProfile = () => {
-    const navigate = useNavigate();
-    const [name, setName] = useState("");
-    const [gender, setGender] = useState("Rather Not say");
-    const [city, setCity] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [address, setAddress] = useState("");
-    const [about, setAbout] = useState("");
-    const [imageSrc, setImageSrc] = useState(
-        "https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"
-    );
-    const [date, setDate] = useState(new Date());
-    const [country, setCountry] = useState("United States");
-    const options = useMemo(() => countryList().getData(), []);
-    const [cookie, setCookie] = useCookies(["cookie"]);
-    const [updated, setUpdated] = useState(false);
-    const selectOptions = [];
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
 
-    options.map((option) => {
-        selectOptions.push(
-            <option value={option.label}>{option.label}</option>
-        );
-    });
-    const changeHandlerGeneric = (value, setterFunc) => {
-        console.log(value);
-        setterFunc(value);
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [gender, setGender] = useState("Rather Not say");
+  const [city, setCity] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [about, setAbout] = useState("");
+  const [imageSrc, setImageSrc] = useState(
+    "https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"
+  );
+  const [date, setDate] = useState(new Date());
+  const [country, setCountry] = useState("United States");
+  const options = useMemo(() => countryList().getData(), []);
+  const [cookie, setCookie] = useCookies(["cookie"]);
+  const [updated, setUpdated] = useState(false);
+  const selectOptions = [];
+
+  options.map((option) => {
+    selectOptions.push(<option value={option.label}>{option.label}</option>);
+  });
+  const changeHandlerGeneric = (value, setterFunc) => {
+    console.log(value);
+    setterFunc(value);
+  };
+  const updateProfile = () => {
+    const data = {
+      name: name,
+      gender: gender,
+      city: city,
+      phone_no: phone,
+      address: address,
+      country: country,
+      email: email,
+      date: date,
+      about: about,
     };
-    const updateProfile = () => {
-        const data = {
-            name: name,
-            gender: gender,
-            city: city,
-            phone_no: phone,
-            address: address,
-            country: country,
-            email: email,
-            date: date,
-            about: about,
-        };
-        console.log(data);
-        axios
-            .post(`${BASE_URL}/updateProfile`, data, {
-                headers: {
-                    "content-Type": "application/json",
-                    "auth-token": cookie.cookie.token,
-                },
-            })
-            .then((response) => {
-                console.log("Status Code : ", response.status);
-                if (response.status === 200) {
-                    axios
-                        .get(`${BASE_URL}/profile`, {
-                            headers: {
-                                "auth-token": cookie.cookie.token,
-                            },
-                        })
-                        .then((response) => {
-                            console.log("Status Code : ", response.status);
-                            if (response.status === 200) {
-                                console.log(response);
-                                localStorage.setItem(
-                                    "user",
-                                    JSON.stringify(response.data)
-                                );
-                                navigate("/favorite");
-                            }
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                        });
-                    setUpdated(true);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-    useEffect(() => {
-        axios.defaults.withCredentials = true;
-        axios
+    console.log(data);
+    axios
+      .post(`${BASE_URL}/updateProfile`, data, {
+        headers: {
+          "content-Type": "application/json",
+          "auth-token": cookie.cookie.token,
+        },
+      })
+      .then((response) => {
+        console.log("Status Code : ", response.status);
+        if (response.status === 200) {
+          axios
             .get(`${BASE_URL}/profile`, {
-                headers: {
-                    "auth-token": cookie.cookie.token,
-                },
+              headers: {
+                "auth-token": cookie.cookie.token,
+              },
             })
             .then((response) => {
-                console.log("Status Code : ", response.status);
-                if (response.status === 200) {
-                    console.log(response);
-                    setName(response.data.first_name);
-                    setGender(response.data.gender);
-                    setCity(response.data.city);
-                    setEmail(response.data.email);
-                    setPhone(response.data.phone_no);
-                    setAddress(response.data.address);
-                    setAbout(response.data.about);
-                    if (response.data.date) {
-                        setDate(new Date(response.data.date).toUTCString());
-                    }
-                    setCountry(response.data.country);
-                    if (response.data.user_image !== null) {
-                        setImageSrc(
-                            `${BASE_URL}/images/${response.data.user_image}`
-                        );
-                    }
-                }
+              console.log("Status Code : ", response.status);
+              if (response.status === 200) {
+                console.log("In Editprofile", response);
+                let date2 = new Date(response.data.date).toUTCString();
+                dispatch(
+                  updateUserDetails({
+                    first_name: response.data.first_name,
+                    dob: date2,
+                    gender: response.data.gender,
+                    city: response.data.city,
+                    user_image: `${BASE_URL}/images/${response.data.user_image}`,
+                    about: response.data.about,
+                    phone_no: response.data.phone_no,
+                    adddress: response.data.address,
+                  })
+                );
+                localStorage.setItem("user", JSON.stringify(response.data));
+                navigate("/favorite");
+              }
             })
             .catch((err) => {
-                console.log(err);
+              console.log(err);
             });
-        setName(cookie.cookie.first_name);
-        setEmail(cookie.cookie.email);
-    }, []);
-    const changeImage = (data) => {
-        console.log(data);
-        const formData = new FormData();
-        formData.append("UserImage", data);
-        axios
-            .post(
-                `${BASE_URL}/updateProfileImage/` + cookie.cookie.user_id,
-                formData,
-                {
-                    headers: {
-                        "content-Type": "multipart/form-data",
-                        "auth-token": cookie.cookie.token,
-                    },
-                }
-            )
-            .then((response) => {
-                console.log("Status Code : ", response.status);
-                if (response.status === 200) {
-                    console.log(response);
-                    setUpdated(true);
-                    setImageSrc(
-                        `${BASE_URL}/images/${response.data.imageName}`
-                    );
-                }
+          setUpdated(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  useEffect(() => {
+    axios.defaults.withCredentials = true;
+    axios
+      .get(`${BASE_URL}/profile`, {
+        headers: {
+          "auth-token": cookie.cookie.token,
+        },
+      })
+      .then((response) => {
+        console.log("Status Code : ", response.status);
+        if (response.status === 200) {
+          console.log("Edit profile", response);
+          setName(response.data.first_name);
+          setGender(response.data.gender);
+          setCity(response.data.city);
+          setEmail(response.data.email);
+          setPhone(response.data.phone_no);
+          setAddress(response.data.address);
+          setAbout(response.data.about);
+          let date1;
+          if (response.data.date) {
+            date1 = new Date(response.data.date).toUTCString();
+            setDate(date1);
+          }
+          setCountry(response.data.country);
+          if (response.data.user_image !== null) {
+            setImageSrc(`${BASE_URL}/images/${response.data.user_image}`);
+          }
+          dispatch(
+            updateUserDetails({
+              first_name: response.data.first_name,
+              dob: date1,
+              gender: response.data.gender,
+              city: response.data.city,
+              user_image: `${BASE_URL}/images/${response.data.user_image}`,
+              about: response.data.about,
+              phone_no: response.data.phone_no,
+              adddress: response.data.address,
             })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-    return (
-        <div class="container rounded bg-white mt-5 mb-5">
-            {updated && (
-                <p
-                    style={{
-                        color: "green",
-                        border: "1px solid green",
-                        backgroundColor: "white",
-                    }}
-                >
-                    Profile updated Succesfully
-                </p>
-            )}
-            <div class="row">
-                <div class="col-md-3 border-right">
-                    <div className=" editProfile__img_banner d-flex flex-column align-items-center text-center p-3 py-5">
-                        <img
-                            class="rounded-circle mt-5"
-                            width="150px"
-                            alt="profile pic"
-                            src={imageSrc}
-                        />
-                        <label class="editProfile__shop_icon">
-                            <input
-                                onChange={(event) => {
-                                    console.log(event.target.files);
-                                    changeImage(event.target.files[0]);
-                                }}
-                                type="file"
-                            />
+          );
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    setName(cookie.cookie.first_name);
+    setEmail(cookie.cookie.email);
+  }, []);
+  const changeImage = (data) => {
+    console.log(data);
+    const formData = new FormData();
+    formData.append("UserImage", data);
+    axios
+      .post(
+        `${BASE_URL}/updateProfileImage/` + cookie.cookie.user_id,
+        formData,
+        {
+          headers: {
+            "content-Type": "multipart/form-data",
+            "auth-token": cookie.cookie.token,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("Status Code : ", response.status);
+        if (response.status === 200) {
+          console.log(response);
+          setUpdated(true);
+          setImageSrc(`${BASE_URL}/images/${response.data.imageName}`);
+          const user = JSON.parse(localStorage.getItem("user"));
+          user["user_image"] = response.data.imageName;
+          console.log("User setttt", user);
+          localStorage.setItem("user", JSON.stringify(user));
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  return (
+    <div class="container rounded bg-white mt-5 mb-5">
+      {updated && (
+        <p
+          style={{
+            color: "green",
+            border: "1px solid green",
+            backgroundColor: "white",
+          }}
+        >
+          Profile updated Succesfully
+        </p>
+      )}
+      <div class="row">
+        <div class="col-md-3 border-right">
+          <div className=" editProfile__img_banner d-flex flex-column align-items-center text-center p-3 py-5">
+            <img
+              class="rounded-circle mt-5"
+              width="150px"
+              alt="profile pic"
+              src={imageSrc}
+            />
+            <label class="editProfile__shop_icon">
+              <input
+                onChange={(event) => {
+                  console.log(event.target.files);
+                  changeImage(event.target.files[0]);
+                }}
+                type="file"
+              />
 
-                            <CameraAlt />
-                            {/* Custom Upload */}
-                        </label>
-                        <span class="font-weight-bold">{name}</span>
-                        <span class="text-black-50">{email}</span>
-                        <span> </span>
-                    </div>
-                </div>
-                <div class="col-md-5 border-right">
-                    <form
-                        class="p-3 py-5"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            updateProfile();
-                        }}
-                    >
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="text-right">Your Public Profile</h4>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <label class="labels">Your Name</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="first name"
-                                    value={name}
-                                    onChange={(e) => {
-                                        changeHandlerGeneric(
-                                            e.target.value,
-                                            setName
-                                        );
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <label class="labels">Email ID</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="enter email id"
-                                    value={email}
-                                    onChange={(e) => {
-                                        changeHandlerGeneric(
-                                            e.target.value,
-                                            setEmail
-                                        );
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <label class="labels">Gender</label>
-                                <div class="form-check">
-                                    <input
-                                        class="form-check-input"
-                                        type="radio"
-                                        name="flexRadioDefault"
-                                        id="flexRadioDefault1"
-                                        value="male"
-                                        checked={gender === "male"}
-                                        onChange={(e) => {
-                                            changeHandlerGeneric(
-                                                e.target.value,
-                                                setGender
-                                            );
-                                        }}
-                                    />
-                                    <label
-                                        class="form-check-label"
-                                        for="flexRadioDefault1"
-                                    >
-                                        Male
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input
-                                        class="form-check-input"
-                                        type="radio"
-                                        name="flexRadioDefault"
-                                        id="flexRadioDefault2"
-                                        value="female"
-                                        checked={gender === "female"}
-                                        onChange={(e) => {
-                                            changeHandlerGeneric(
-                                                e.target.value,
-                                                setGender
-                                            );
-                                        }}
-                                    />
-                                    <label
-                                        class="form-check-label"
-                                        for="flexRadioDefault2"
-                                    >
-                                        Female
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input
-                                        class="form-check-input"
-                                        type="radio"
-                                        name="flexRadioDefault"
-                                        id="flexRadioDefault3"
-                                        value="Rather Not say"
-                                        checked={gender === "Rather Not say"}
-                                        onChange={(e) => {
-                                            changeHandlerGeneric(
-                                                e.target.value,
-                                                setGender
-                                            );
-                                        }}
-                                    />
-                                    <label
-                                        class="form-check-label"
-                                        for="flexRadioDefault3"
-                                    >
-                                        Rather Not say
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label for="date">Date of Birth</label>
-                                <DatePicker
-                                    selected={date}
-                                    onChange={(date) => {
-                                        console.log(date);
-                                        setDate(date);
-                                    }}
-                                />
-                            </div>
-                            <div class="col-md-12">
-                                <label for="phone">Phone Number</label>
-                                <input
-                                    type="tel"
-                                    id="phone"
-                                    name="phone"
-                                    class="form-control"
-                                    pattern="[0-9]{3}-[0-9]{4}-[0-9]{3}"
-                                    value={phone}
-                                    onChange={(e) => {
-                                        changeHandlerGeneric(
-                                            e.target.value,
-                                            setPhone
-                                        );
-                                    }}
-                                />
-                            </div>
-                            <div class="col-md-12">
-                                <label for="FormControlTextarea1">
-                                    Address
-                                </label>
-                                <textarea
-                                    class="form-control"
-                                    id="FormControlTextarea1"
-                                    rows="3"
-                                    value={address}
-                                    onChange={(e) => {
-                                        changeHandlerGeneric(
-                                            e.target.value,
-                                            setAddress
-                                        );
-                                    }}
-                                    required
-                                ></textarea>
-                            </div>
-                            <div class="col-md-12">
-                                <label class="labels">City</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="City"
-                                    value={city}
-                                    onChange={(e) => {
-                                        changeHandlerGeneric(
-                                            e.target.value,
-                                            setCity
-                                        );
-                                    }}
-                                />
-                            </div>
-                            <div class="col-md-12">
-                                <label for="FormControlTextarea2">About</label>
-                                <textarea
-                                    class="form-control"
-                                    id="FormControlTextarea2"
-                                    rows="3"
-                                    value={about}
-                                    onChange={(e) => {
-                                        changeHandlerGeneric(
-                                            e.target.value,
-                                            setAbout
-                                        );
-                                    }}
-                                ></textarea>
-                            </div>
-                        </div>
-
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <label class="labels">Country</label>
-                                <select
-                                    className="form-select custom-select"
-                                    value={country}
-                                    onChange={(e) => {
-                                        console.log(e.target.value);
-                                        setCountry(e.target.value);
-                                    }}
-                                >
-                                    {selectOptions}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mt-5 text-center">
-                            <button
-                                class="btn btn-primary profile-button"
-                                type="submit"
-                            >
-                                Save Profile
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+              <CameraAlt />
+              {/* Custom Upload */}
+            </label>
+            <span class="font-weight-bold">{name}</span>
+            <span class="text-black-50">{email}</span>
+            <span> </span>
+          </div>
         </div>
-    );
+        <div class="col-md-5 border-right">
+          <form
+            class="p-3 py-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateProfile();
+            }}
+          >
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="text-right">Your Public Profile</h4>
+            </div>
+            <div class="row mt-2">
+              <div class="col-md-6">
+                <label class="labels">Your Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="first name"
+                  value={name}
+                  onChange={(e) => {
+                    changeHandlerGeneric(e.target.value, setName);
+                  }}
+                />
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-12">
+                <label class="labels">Email ID</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="enter email id"
+                  value={email}
+                  onChange={(e) => {
+                    changeHandlerGeneric(e.target.value, setEmail);
+                  }}
+                />
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-12">
+                <label class="labels">Gender</label>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="flexRadioDefault"
+                    id="flexRadioDefault1"
+                    value="male"
+                    checked={gender === "male"}
+                    onChange={(e) => {
+                      changeHandlerGeneric(e.target.value, setGender);
+                    }}
+                  />
+                  <label class="form-check-label" for="flexRadioDefault1">
+                    Male
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="flexRadioDefault"
+                    id="flexRadioDefault2"
+                    value="female"
+                    checked={gender === "female"}
+                    onChange={(e) => {
+                      changeHandlerGeneric(e.target.value, setGender);
+                    }}
+                  />
+                  <label class="form-check-label" for="flexRadioDefault2">
+                    Female
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="flexRadioDefault"
+                    id="flexRadioDefault3"
+                    value="Rather Not say"
+                    checked={gender === "Rather Not say"}
+                    onChange={(e) => {
+                      changeHandlerGeneric(e.target.value, setGender);
+                    }}
+                  />
+                  <label class="form-check-label" for="flexRadioDefault3">
+                    Rather Not say
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <label for="date">Date of Birth</label>
+                <DatePicker
+                  selected={date}
+                  onChange={(date) => {
+                    console.log(date);
+                    setDate(date);
+                  }}
+                />
+              </div>
+              <div class="col-md-12">
+                <label for="phone">Phone Number</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  class="form-control"
+                  pattern="[0-9]{3}-[0-9]{4}-[0-9]{3}"
+                  value={phone}
+                  onChange={(e) => {
+                    changeHandlerGeneric(e.target.value, setPhone);
+                  }}
+                />
+              </div>
+              <div class="col-md-12">
+                <label for="FormControlTextarea1">Address</label>
+                <textarea
+                  class="form-control"
+                  id="FormControlTextarea1"
+                  rows="3"
+                  value={address}
+                  onChange={(e) => {
+                    changeHandlerGeneric(e.target.value, setAddress);
+                  }}
+                  required
+                ></textarea>
+              </div>
+              <div class="col-md-12">
+                <label class="labels">City</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="City"
+                  value={city}
+                  onChange={(e) => {
+                    changeHandlerGeneric(e.target.value, setCity);
+                  }}
+                />
+              </div>
+              <div class="col-md-12">
+                <label for="FormControlTextarea2">About</label>
+                <textarea
+                  class="form-control"
+                  id="FormControlTextarea2"
+                  rows="3"
+                  value={about}
+                  onChange={(e) => {
+                    changeHandlerGeneric(e.target.value, setAbout);
+                  }}
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="row mt-3">
+              <div class="col-md-12">
+                <label class="labels">Country</label>
+                <select
+                  className="form-select custom-select"
+                  value={country}
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    setCountry(e.target.value);
+                  }}
+                >
+                  {selectOptions}
+                </select>
+              </div>
+            </div>
+            <div class="mt-5 text-center">
+              <button class="btn btn-primary profile-button" type="submit">
+                Save Profile
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default EditProfile;
