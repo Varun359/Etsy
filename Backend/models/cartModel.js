@@ -14,6 +14,12 @@ const cartSchema = new mongoose.Schema({
   quantity: {
     type: Number,
   },
+  gift: {
+    type: String,
+  },
+  give_gift: {
+    type: Boolean,
+  },
 });
 
 module.exports = mongoose.model("cart", cartSchema);

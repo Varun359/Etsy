@@ -90,6 +90,8 @@ exports.getCartItems = asyncErrorHandler(async (req, res) => {
         sales_count: doc.item.sales_count,
         shop_name: doc.user.shop_name,
         quantity: doc.quantity,
+        gift: doc.gift ? doc.gift : null,
+        give_gift: doc.give_gift ? doc.give_gift : false,
       });
     }
   }
