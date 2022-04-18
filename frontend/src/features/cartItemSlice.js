@@ -41,6 +41,20 @@ export const cartItemsSlice = createSlice({
           state.cartItems[itemIndex].quantity - 1;
     },
 
+    sendGift: (state, action) => {
+      const itemIndex = state.cartItems.findIndex(
+        (ele) => ele.item_id === action.payload.item_id
+      );
+      state.cartItems[itemIndex].give_gift =
+        !state.cartItems[itemIndex].give_gift;
+    },
+
+    giftDescription: (state, action) => {
+      const itemIndex = state.cartItems.findIndex(
+        (ele) => ele.item_id === action.payload.item_id
+      );
+      state.cartItems[itemIndex].gift = action.payload.gift;
+    },
     deleteCartItem: (state, action) => {
       const itemIndex = state.cartItems.findIndex(
         (ele) => ele.item_id === action.payload.item_id
@@ -64,6 +78,8 @@ export const {
   addCartItemQuantity,
   deleteCartItemQuantity,
   deleteCartItem,
+  sendGift,
+  giftDescription,
 } = cartItemsSlice.actions;
 
 export const getCartItems = (state) => state.cartItem.cartItems;

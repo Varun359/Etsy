@@ -14,6 +14,8 @@ import {
   addCartItemQuantity,
   deleteCartItemQuantity,
   deleteCartItem,
+  sendGift,
+  giftDescription,
 } from "../features/cartItemSlice";
 import { CheckBox } from "@material-ui/icons";
 
@@ -106,6 +108,21 @@ function CartItems() {
     );
   };
 
+  const sendGiftHandler = (e, item) => {
+    dispatch(
+      sendGift({
+        item_id: item.item_id,
+      })
+    );
+  };
+  const giftDescriptiontHandler = (e, item) => {
+    dispatch(
+      giftDescription({
+        item_id: item.item_id,
+        gift: e.target.value,
+      })
+    );
+  };
   const handleProceedToCheckOut = () => {
     const purchaseData = {
       dateOfPurchase: new Date(),
@@ -183,25 +200,26 @@ function CartItems() {
               <div>
                 <input
                   type="checkbox"
-                  value={isChecked}
+                  value={item.give_gift}
                   id="check"
                   onChange={(e) => {
-                    console.log(e.target.value);
-                    setIsChecked(e.target.value);
+                    console.log(e.target.value, item);
+                    sendGiftHandler(e, item);
                   }}
                   style={{ marginBottom: "26px" }}
                 />
                 <label for="check"> Add a gift</label>
-                {isChecked && (
+                {item.give_gift && (
                   <div>
                     <textarea
                       id="item_desc"
-                      placeholder="send the gift"
+                      placeholder="Send a gift"
                       rows="1"
                       cols="30"
-                      value={gift}
+                      value={item.gift}
                       onChange={(e) => {
-                        setGift(e.target.value);
+                        console.log(e.target.value);
+                        giftDescriptiontHandler(e, item);
                       }}
                     ></textarea>
                   </div>
