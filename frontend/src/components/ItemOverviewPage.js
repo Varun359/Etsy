@@ -56,6 +56,8 @@ function ItemOverviewPage() {
     const cartData = {
       item_id: id,
       quantity: quantity,
+      gift: null,
+      give_gift: false,
       shop_name: item.shop_name,
     };
     console.log("cartData", item);
@@ -67,6 +69,8 @@ function ItemOverviewPage() {
       addItemToCart({
         ...item,
         quantity,
+        gift: null,
+        give_gift: false,
         user_id: user_now,
       })
     );
