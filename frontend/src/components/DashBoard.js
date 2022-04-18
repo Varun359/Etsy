@@ -23,24 +23,25 @@ function DashBoard({ loggedIn }) {
   };
 
   const handleRefresh = () => {
+    console.log("In handlerefresh");
     setItemsRefresh(!itemsRefresh);
   };
-  console.log(cookie);
+  //console.log(cookie);
   useEffect(() => {
-    console.log(cookie);
+    //console.log(cookie);
     var cookies = decodeURIComponent(document.cookie).split(";");
     cookies.forEach((cookieEle) => {
-      console.log(cookieEle);
-      console.log(cookieEle.indexOf("cookie=j:"));
+      //console.log(cookieEle);
+      //console.log(cookieEle.indexOf("cookie=j:"));
       if (cookieEle.indexOf("cookie=j:") !== -1) {
         if (cookieEle.replace("cookie=j:", "") !== cookie) {
           setRefresh(true);
           setCookie(JSON.parse(cookieEle.replace("cookie=j:", "")));
         }
-        console.log(cookie);
+        //console.log(cookie);
       }
     });
-    console.log(cookie);
+    // console.log(cookie);
     if (cookie === undefined) {
       axios
         .get(`${BASE_URL}/allItems`, {
@@ -50,8 +51,9 @@ function DashBoard({ loggedIn }) {
         })
         .then((response) => {
           data = response.data;
-          console.log(response);
+          console.log("This is the response ", response);
           var dashBoardData_dummy = data.map((item) => {
+            console.log(item);
             var ImageSrc =
               item.item_image === null
                 ? `${BASE_URL}/images/item_image.avif`
@@ -77,7 +79,7 @@ function DashBoard({ loggedIn }) {
           setDashBoardData(dashBoardData_dummy);
         });
     } else {
-      console.log("cookie", cookie.token);
+      //console.log("cookie", cookie.token);
       axios
         .get(`${BASE_URL}/allItemsById`, {
           headers: {
@@ -87,14 +89,16 @@ function DashBoard({ loggedIn }) {
         })
         .then((response) => {
           data = response.data;
-          console.log(response);
+          // console.log(response);
           var dashBoardData_dummy = data.map((item) => {
             var ImageSrc =
               item.item_image === null
                 ? `${BASE_URL}/images/item_image.avif`
                 : `${BASE_URL}/images/${item.item_image}`;
-            console.log(ImageSrc);
-            console.log(item);
+            // console.log(ImageSrc);
+            //console.log(item);
+            console.log("HELLO", item);
+
             var dashBoardItem = (
               <DashBoardItem
                 key={item.item_id}
@@ -104,7 +108,7 @@ function DashBoard({ loggedIn }) {
                 price={item.item_price}
                 currency={"$"}
                 itemId={item.item_id}
-                isFavorite={item.is_favorite}
+                isFavorite={item.is_Favorite}
                 handleRefresh={handleRefresh}
               />
             );
