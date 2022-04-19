@@ -1,4 +1,9 @@
 const auth = require("../middlewares/auth");
+
+let passport = require("passport");
+require("../middlewares/passport")(passport);
+let checkAuth = passport.authenticate("jwt", { session: false });
+
 const express = require("express");
 const {
   getFavoriteItems,
@@ -12,12 +17,14 @@ const {
 } = require("../controllers/itemController");
 const router = express.Router();
 
-router.route("/favoriteItems").get(auth, getFavoriteItems);
+router.route("/favoriteItems").get(checkAuth, getFavoriteItems);
 router.route("/allItems").get(getAllItems);
-router.route("/allItemsById").get(auth, getAllItemsById);
-router.route("/addFavorites/:item_id").post(auth, addFavorites);
-router.route("/removeFavorites/:item_id").post(auth, removeFavorites);
-router.route("/searchItems/:search").get(auth, searchItems);
-router.route("/searchFavoriteItems/:search").get(auth, searchFavoriteItems);
-router.route("/itemDetails/:item_id").get(auth, getItemDetails);
+router.route("/allItemsById").get(checkAuth, getAllItemsById);
+router.route("/addFavorites/:item_id").post(checkAuth, addFavorites);
+router.route("/removeFavorites/:item_id").post(checkAuth, removeFavorites);
+router.route("/searchItems/:search").get(checkAuth, searchItems);
+router
+  .route("/searchFavoriteItems/:search")
+  .get(checkAuth, searchFavoriteItems);
+router.route("/itemDetails/:item_id").get(checkAuth, getItemDetails);
 module.exports = router;

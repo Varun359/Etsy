@@ -1,4 +1,8 @@
 const auth = require("../middlewares/auth");
+let passport = require("passport");
+require("../middlewares/passport")(passport);
+let checkAuth = passport.authenticate("jwt", { session: false });
+
 const express = require("express");
 
 const {
@@ -9,8 +13,8 @@ const {
 } = require("../controllers/cartController");
 const router = express.Router();
 
-router.route("/AddToCart").post(auth, addItemToCart);
-router.route("/cartItems").get(auth, getCartItems);
-router.route("/addAllCartItems").post(auth, addMultipleItemsToCart);
-router.route("/deleteCartItems").get(auth, deleteCartItems);
+router.route("/AddToCart").post(checkAuth, addItemToCart);
+router.route("/cartItems").get(checkAuth, getCartItems);
+router.route("/addAllCartItems").post(checkAuth, addMultipleItemsToCart);
+router.route("/deleteCartItems").get(checkAuth, deleteCartItems);
 module.exports = router;

@@ -2,6 +2,11 @@ const mysql = require("mysql");
 var connection = require("../database");
 const User = require("../models/userModel");
 const auth = require("../middlewares/auth");
+
+let passport = require("passport");
+require("../middlewares/passport")(passport);
+let checkAuth = passport.authenticate("jwt", { session: false });
+
 const express = require("express");
 const {
   checkShopName,
@@ -46,17 +51,17 @@ const upload = multer({
 
 const router = express.Router();
 //get shop items by shop id.
-router.route("/shopItems").get(auth, getShopItems);
-router.route("/shopItems/:user_id").get(auth, getShopItemsById);
-router.route("/insertItems").post(auth, insertIntoShop);
-router.route("/checkShop").post(auth, checkShopName);
-router.route("/changeShopName").get(auth, changeShopName);
-router.route("/editShopItem/:item_id").get(auth, editShopItem);
-router.route("/shopDetails").get(auth, getShopDetails);
-router.route("/shopDetailsById/:user_id").get(auth, getShopDetailsById);
-router.route("/createShop").post(auth, createShop);
+router.route("/shopItems").get(checkAuth, getShopItems);
+router.route("/shopItems/:user_id").get(checkAuth, getShopItemsById);
+router.route("/insertItems").post(checkAuth, insertIntoShop);
+router.route("/checkShop").post(checkAuth, checkShopName);
+router.route("/changeShopName").get(checkAuth, changeShopName);
+router.route("/editShopItem/:item_id").get(checkAuth, editShopItem);
+router.route("/shopDetails").get(checkAuth, getShopDetails);
+router.route("/shopDetailsById/:user_id").get(checkAuth, getShopDetailsById);
+router.route("/createShop").post(checkAuth, createShop);
 router.route("/updateShop").post(
-  auth,
+  checkAuth,
   async (req, res, next) => {
     try {
       await upload.single("shopImage");
@@ -70,7 +75,7 @@ router.route("/updateShop").post(
 );
 
 router.route("/updateShopImage").post(
-  auth,
+  checkAuth,
   async (req, res, next) => {
     try {
       await upload.single("ShopImage");

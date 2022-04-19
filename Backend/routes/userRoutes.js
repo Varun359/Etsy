@@ -1,4 +1,9 @@
 const auth = require("../middlewares/auth");
+
+let passport = require("passport");
+require("../middlewares/passport")(passport);
+let checkAuth = passport.authenticate("jwt", { session: false });
+
 const express = require("express");
 const {
   registerUser,
@@ -39,8 +44,8 @@ const upload = multer({
 // register -> create account x, y, z (.env) <--> jwt1 ttl -> 24hr
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
-router.route("/profile").get(auth, getUserDetails);
-router.route("/updateProfile").post(auth, updateProfile);
+router.route("/profile").get(checkAuth, getUserDetails);
+router.route("/updateProfile").post(checkAuth, updateProfile);
 
 router.route("/updateProfileImage/:user_id").post(
   auth,
