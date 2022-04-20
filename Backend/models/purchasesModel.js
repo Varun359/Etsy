@@ -22,6 +22,9 @@ const purchaseSchema = new mongoose.Schema({
   price_buyed: {
     type: String,
   },
+  gift: {
+    type: String,
+  },
   item_name: {
     type: String,
   },
