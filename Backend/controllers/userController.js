@@ -99,9 +99,11 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
 // Get User Details
 exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
   const { user_id } = req.user;
-
+  console.log(req.user);
+  console.log(user_id);
   const user = await User.findOne({ _id: mongoose.Types.ObjectId(user_id) });
 
+  console.log(user);
   res.send({
     first_name: user.first_name,
     email: user.email,

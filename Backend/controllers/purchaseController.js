@@ -11,6 +11,7 @@ exports.purchasingItems = asyncErrorHandler(async (req, res) => {
   console.log(req.body);
   const doc1 = await Order.create({ date: req.body.dateOfPurchase });
 
+  console.log("req.body.itemsssss console", req.body.items);
   if (doc1) {
     let items = [];
     for (let item of req.body.items) {
@@ -19,6 +20,7 @@ exports.purchasingItems = asyncErrorHandler(async (req, res) => {
         item: mongoose.Types.ObjectId(item.item_id),
         user: mongoose.Types.ObjectId(req.user.user_id),
         quantity_buyed: item.quantity,
+        gift: item.gift ? item.gift : null,
         price_buyed: parseFloat(item.quantity * item.item_price),
         shop_name: item.shop_name,
         item_name: item.item_name,
@@ -63,6 +65,7 @@ exports.getPreviousOrders = asyncErrorHandler(async (req, res) => {
         user_id: item.user,
         order_id: item.order._id,
         quantity_buyed: item.quantity_buyed,
+        gift: item.gift,
         price_buyed: parseFloat(item.price_buyed),
         item_name: item.item_name,
         item_image: item.item_image,

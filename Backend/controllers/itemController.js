@@ -23,9 +23,9 @@ exports.getFavoriteItems = asyncErrorHandler(async (req, res) => {
         item_desc: doc.item.item_desc,
         item_quantity: doc.item.item_quantity,
         item_category: doc.item.item_category,
-        item_image: doc.item.item_image,
-        sales_count: doc.item.sales_count,
-        shop_name: doc.user.shop_name,
+        item_image: doc.item.item_image ? doc.item.item_image : null,
+        // sales_count: doc.item.sales_count,
+        //shop_name: doc.user.shop_name,
       });
     }
   }
@@ -48,8 +48,8 @@ exports.getAllItems = asyncErrorHandler(async (req, res) => {
         item_quantity: item.item_quantity,
         item_category: item.item_category,
         item_image: item.item_image ? item.item_image : null,
-        sales_count: item.sales_count,
-        shop_name: item.user.shop_name,
+        // sales_count: item.sales_count,
+        // shop_name: item.user.shop_name,
       });
     }
   }
@@ -189,7 +189,25 @@ exports.searchFavoriteItems = asyncErrorHandler(async (req, res) => {
     },
   ]);
   console.log(doc);
-  res.send(doc?.length ? doc : "No Search Results");
+
+  let data = [];
+  if (doc.length) {
+    for (let item of doc) {
+      data.push({
+        user_id: item.user._id,
+        item_name: item.item.item_name,
+        item_price: parseFloat(item.item.item_price),
+        item_desc: item.item.item_desc,
+        item_quantity: item.item.item_quantity,
+        item_category: item.item.item_category,
+        item_image: item.item.item_image ? item.item.item_image : null,
+      });
+    }
+  }
+
+  console.log(data);
+  res.send(data?.length ? data : "0");
+  // res.send(doc?.length ? doc : "No Search Results");
 });
 
 //get item details by item id
