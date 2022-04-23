@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../variables";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser, updateUserDetails } from "../features/userSlice";
+import { s3 } from "./configure";
 
 const EditProfile = () => {
   const dispatch = useDispatch();
@@ -126,7 +127,7 @@ const EditProfile = () => {
           }
           setCountry(response.data.country);
           if (response.data.user_image !== null) {
-            setImageSrc(`${BASE_URL}/images/${response.data.user_image}`);
+            setImageSrc(response.data.user_image);
           }
           dispatch(
             updateUserDetails({
@@ -148,27 +149,52 @@ const EditProfile = () => {
     setName(cookie.cookie.first_name);
     setEmail(cookie.cookie.email);
   }, []);
-  const changeImage = (data) => {
-    console.log(data);
+  const changeImage = async (data) => {
+    console.log("The data", data.name);
     const formData = new FormData();
     formData.append("UserImage", data);
+
+    console.log("This is in edit User Image");
+
+    // changed here
+    const imageName = `users/${Date.now()}_${data.name}`;
+    console.log(imageName);
+    const params = {
+      Bucket: "etsyimages",
+      Key: imageName,
+      Expires: 60,
+      ContentType: "image/*",
+    };
+    const uploadUrl = await s3.getSignedUrlPromise("putObject", params);
+    console.log(uploadUrl);
+    await fetch(
+      new Request(uploadUrl, {
+        method: "PUT",
+        body: data,
+        headers: new Headers({
+          "Content-Type": "image/*",
+        }),
+      })
+    );
+
+    const imageUrl = uploadUrl.split("?")[0];
+
+    const imageData = {
+      imageUrl,
+    };
     axios
-      .post(
-        `${BASE_URL}/updateProfileImage/` + cookie.cookie.user_id,
-        formData,
-        {
-          headers: {
-            "content-Type": "multipart/form-data",
-            "auth-token": cookie.cookie.token,
-          },
-        }
-      )
+      .post(`${BASE_URL}/uploadUserImage/` + cookie.cookie.user_id, imageData, {
+        headers: {
+          "content-Type": "application/json",
+          "auth-token": cookie.cookie.token,
+        },
+      })
       .then((response) => {
         console.log("Status Code : ", response.status);
         if (response.status === 200) {
           console.log(response);
           setUpdated(true);
-          setImageSrc(`${BASE_URL}/images/${response.data.imageName}`);
+          setImageSrc(response.data.user_image);
           const user = JSON.parse(localStorage.getItem("user"));
           user["user_image"] = response.data.imageName;
           console.log("User setttt", user);
@@ -178,6 +204,34 @@ const EditProfile = () => {
       .catch((err) => {
         console.log(err);
       });
+    //till here
+
+    // axios
+    //   .post(
+    //     `${BASE_URL}/updateProfileImage/` + cookie.cookie.user_id,
+    //     formData,
+    //     {
+    //       headers: {
+    //         "content-Type": "multipart/form-data",
+    //         "auth-token": cookie.cookie.token,
+    //       },
+    //     }
+    //   )
+    //   .then((response) => {
+    //     console.log("Status Code : ", response.status);
+    //     if (response.status === 200) {
+    //       console.log(response);
+    //       setUpdated(true);
+    //       setImageSrc(`${BASE_URL}/images/${response.data.imageName}`);
+    //       const user = JSON.parse(localStorage.getItem("user"));
+    //       user["user_image"] = response.data.imageName;
+    //       console.log("User setttt", user);
+    //       localStorage.setItem("user", JSON.stringify(user));
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   };
   return (
     <div class="container rounded bg-white mt-5 mb-5">
@@ -204,7 +258,7 @@ const EditProfile = () => {
             <label class="editProfile__shop_icon">
               <input
                 onChange={(event) => {
-                  console.log(event.target.files);
+                  console.log("eventtttt", event.target.files);
                   changeImage(event.target.files[0]);
                 }}
                 type="file"
