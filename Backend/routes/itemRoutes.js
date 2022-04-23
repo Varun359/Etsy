@@ -27,4 +27,17 @@ router
   .route("/searchFavoriteItems/:search")
   .get(checkAuth, searchFavoriteItems);
 router.route("/itemDetails/:item_id").get(checkAuth, getItemDetails);
+// router.route("/uploadItemImage/:item_id").post(auth, async (req, res, next) => {
+//   const newData = {
+//     user_image: req.body.imageUrl,
+//   };
+//   console.log(req.body.imageUrl);
+//   await Item.findByIdAndUpdate(req.user.user_id, newData);
+
+//   // res.status(200).json({
+//   //   success: true,
+//   // });
+//   res.send(newData);
+// });
+
 module.exports = router;

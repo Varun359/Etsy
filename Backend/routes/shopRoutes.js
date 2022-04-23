@@ -56,63 +56,32 @@ router.route("/shopItems/:user_id").get(checkAuth, getShopItemsById);
 router.route("/insertItems").post(checkAuth, insertIntoShop);
 router.route("/checkShop").post(checkAuth, checkShopName);
 router.route("/changeShopName").get(checkAuth, changeShopName);
-router.route("/editShopItem/:item_id").get(checkAuth, editShopItem);
+router.route("/editShopItem/:item_id").post(checkAuth, editShopItem);
 router.route("/shopDetails").get(checkAuth, getShopDetails);
 router.route("/shopDetailsById/:user_id").get(checkAuth, getShopDetailsById);
 router.route("/createShop").post(checkAuth, createShop);
-router.route("/updateShop").post(
-  checkAuth,
-  async (req, res, next) => {
-    try {
-      await upload.single("shopImage");
-      next();
-    } catch (err) {
-      console.log(err);
-      res.send("failed!");
-    }
-  },
-  updateShop
-);
+// router.route("/updateShop").post(
+//   checkAuth,
+//   async (req, res, next) => {
+//     try {
+//       await upload.single("shopImage");
+//       next();
+//     } catch (err) {
+//       console.log(err);
+//       res.send("failed!");
+//     }
+//   },
+//   updateShop
+// );
 
-router.route("/updateShopImage").post(
-  checkAuth,
-  async (req, res, next) => {
-    try {
-      await upload.single("ShopImage");
-      next();
-    } catch (err) {
-      console.log(err);
-      res.send("failed!");
-    }
-  },
-  async (req, res, next) => {
-    var userId = req.user.user_id;
-    console.log(req.files);
+router.route("/updateShopImage").post(checkAuth, async (req, res, next) => {
+  const newData = {
+    shop_image: req.body.imageUrl,
+  };
+  console.log(req.body.imageUrl);
+  await User.findByIdAndUpdate(req.user.user_id, newData);
 
-    var imageName = null;
-    if (req.files.length !== 0) {
-      imageName = `${Date.now()}_${req.files.ShopImage.name}`;
-      req.files.ShopImage.mv(`./images/${imageName}`);
-      console.log(imageName);
-      console.log(req.user.user_id);
-      const doc = await User.findByIdAndUpdate(
-        req.user.user_id,
-        {
-          shop_image: imageName,
-        },
-        {
-          new: true,
-        }
-      );
-      // const doc = await User.find({
-      //   _id: mongoose.Types.ObjectId(req.user.user_id),
-      // });
-      // doc.shop_image = imageName;
-      // await doc[0].save();
-      console.log(doc);
-      res.send(doc);
-    }
-  }
-);
+  res.send(newData);
+});
 
 module.exports = router;
