@@ -6,8 +6,11 @@ import { useCookies } from "react-cookie";
 import DashboardContext from "./Dashboard-context";
 import ItemOverviewPage from "./ItemOverviewPage";
 import { BASE_URL } from "../variables";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllItems } from "../features/itemsSlice";
 //import { env } from "process";
 function DashBoard({ loggedIn }) {
+  const dispatch = useDispatch();
   var data = [];
   var [dashBoardData, setDashBoardData] = useState([]);
   const [cartCount, setCartCount] = useState(0);
@@ -51,13 +54,14 @@ function DashBoard({ loggedIn }) {
         })
         .then((response) => {
           data = response.data;
+          dispatch(getAllItems(response.data));
           console.log("This is the response ", response);
           var dashBoardData_dummy = data.map((item) => {
             console.log(item);
             var ImageSrc =
               item.item_image === null
                 ? `${BASE_URL}/images/item_image.avif`
-                : `${BASE_URL}/images/${item.item_image}`;
+                : `${item.item_image}`;
             var dashBoardItem = (
               <DashBoardItem
                 key={item.item_id}
@@ -88,13 +92,14 @@ function DashBoard({ loggedIn }) {
           },
         })
         .then((response) => {
+          dispatch(getAllItems(response.data));
           data = response.data;
           // console.log(response);
           var dashBoardData_dummy = data.map((item) => {
             var ImageSrc =
               item.item_image === null
                 ? `${BASE_URL}/images/item_image.avif`
-                : `${BASE_URL}/images/${item.item_image}`;
+                : `${item.item_image}`;
             // console.log(ImageSrc);
             //console.log(item);
             console.log("HELLO", item);

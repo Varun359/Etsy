@@ -6,6 +6,10 @@ import { useCookies } from "react-cookie";
 import DashboardContext from "./Dashboard-context";
 import { Link } from "react-router-dom";
 import { BASE_URL } from "../variables";
+import { useDispatch, useSelector } from "react-redux";
+import { addFavorites } from "../features/itemsSlice";
+import { removeFavorites } from "../features/itemsSlice";
+
 let sample = false;
 function DashBoardItem({
   itemId,
@@ -25,6 +29,7 @@ function DashBoardItem({
   const [cookie, setCookie] = useCookies(["cookie"]);
   // var cookie = undefined;
   // setFavorite(isFavorite);
+  const dispatch = useDispatch();
   useEffect(() => {
     console.log("sample use effect");
   }, [sample]);
@@ -58,6 +63,7 @@ function DashBoardItem({
           if (response.status === 200) {
             console.log("Response is ", response.data);
             isFavorite = true;
+            // dispatch(addFavorites(response.data));
             console.log("sampleadd", isFavorite);
             handleRefresh();
             // setDashBoardData(!dashBoardData);
@@ -84,6 +90,11 @@ function DashBoardItem({
             if (removeElement !== undefined) {
               removeElement(itemId);
             }
+            // dispatch(
+            //   removeFavorites({
+            //     item_id: itemId,
+            //   })
+            // );
             isFavorite = false;
             console.log("sampleremove", isFavorite);
             handleRefresh();

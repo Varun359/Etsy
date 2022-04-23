@@ -223,6 +223,7 @@ exports.getItemDetails = asyncErrorHandler(async (req, res) => {
     item_image: doc.item_image ? doc.item_image : null,
     sales_count: doc.sales_count,
     shop_name: doc.user.shop_name,
+    user_id: doc.user._id,
   };
   console.log(data);
   console.log(doc);

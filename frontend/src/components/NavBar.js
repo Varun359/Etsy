@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/userSlice";
 import { getCartItems } from "../features/cartItemSlice";
 import { BASE_URL } from "../variables";
+import { removeFavoritesList } from "../features/itemsSlice";
 import {
   ShoppingCart,
   Person,
@@ -96,6 +97,7 @@ function NavBar({ callBack }) {
     console.log("This is printing first");
     removeCookie("cookie");
     dispatch(logout());
+    dispatch(removeFavoritesList());
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     handleTriggerRefresh();

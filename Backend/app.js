@@ -3,8 +3,12 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
+const multerS3 = require("multer-s3");
+const aws = require("aws-sdk");
 //const errorMiddleware = require("./middlewares/error");
 const app = express();
+app.use(express.json());
+
 var session = require("express-session");
 var cors = require("cors");
 
@@ -64,6 +68,26 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
+});
+
+const s3 = new aws.S3({
+  accessKeyId: "AKIAZSRVTBBNQHCHG6FK",
+  secretAccessKey: "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",
+  region: "us-west-1",
+});
+
+exports.uploadS3 = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: "etsyimages",
+    acl: "public-read",
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString());
+    },
+  }),
 });
 
 app.use("/profile", express.static("uploads/images"));

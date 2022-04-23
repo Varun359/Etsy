@@ -6,7 +6,7 @@ function ShopItem({ item, src, currency, owner }) {
   const [showSignIn, setshowSignIn] = useState(false);
   return (
     <>
-      <Link to={`/item/${item.item_id}`} class="card">
+      <Link to={`/item/${item._id}`} class="card">
         <img class="card-img-top" src={src} alt="Card cap" />
         <div class="card-body">
           <h5 class="card-title">{item.item_name}</h5>

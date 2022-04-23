@@ -36,14 +36,14 @@ function ProfileBanner() {
           //   user["user_image"] = response.data.user_image;
           //   console.log("user ", user);
           if (response.data.user_image != null) {
-            setProfileImg(`${BASE_URL}/images/` + response.data.user_image);
+            setProfileImg(response.data.user_image);
             console.log(
               "In fav banner profile image is ",
               response.data.user_image
             );
           }
           if (response.data.shop_image != null) {
-            setShopImage(`${BASE_URL}/images/` + response.data.shop_image);
+            setShopImage(response.data.shop_image);
             console.log(
               "In fav banner shop image is ",
               response.data.shop_image

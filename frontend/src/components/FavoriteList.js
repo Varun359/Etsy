@@ -6,7 +6,13 @@ import axios from "axios";
 import { useCookies } from "react-cookie";
 import { BASE_URL } from "../variables";
 
+import { useDispatch, useSelector } from "react-redux";
+import { favoritesList } from "../features/itemsSlice";
+
 function FavoriteList() {
+  const dispatch = useDispatch();
+  //const user = useSelector(selectUser);
+
   var [data, setData] = useState([]);
   var [dashBoardData, setDashBoardData] = useState([]);
   const [cookie, setCookie] = useCookies(["cookie"]);
@@ -34,10 +40,11 @@ function FavoriteList() {
           setDashBoardData(dashBoardData_dummy);
         } else {
           dashBoardData_dummy = response.data.map((item) => {
+            dispatch(favoritesList(response.data));
             var ImageSrc =
               item.item_image === null
                 ? `${BASE_URL}/images/item_image.avif`
-                : `${BASE_URL}/images/${item.item_image}`;
+                : `${item.item_image}`;
             var dashBoardItem = (
               <DashBoardItem
                 key={item.item_id}
@@ -56,6 +63,7 @@ function FavoriteList() {
             }
             return dashBoardItem;
           });
+
           setDashBoardData(dashBoardData_dummy);
         }
       });
@@ -82,7 +90,7 @@ function FavoriteList() {
             var ImageSrc =
               item.item_image === null
                 ? `${BASE_URL}/images/item_image.avif`
-                : `${BASE_URL}/images/${item.item_image}`;
+                : `${item.item_image}`;
             var dashBoardItem = (
               <DashBoardItem
                 key={item.item_id}

@@ -4,33 +4,27 @@ export const itemsSlice = createSlice({
   name: "items",
   initialState: {
     items: [],
-    favourites: [],
+    favorites: [],
   },
   reducers: {
-    // by id
-    // productsList: (state, action) => {
-    //   state.products = action.payload;
-    // },
-    // removeProductsState: (state) => {
-    //   state.products = null;
-    // },
-    // updateProducts: (state, action) => {
-    //   state.products = action.payload;
-    // },
     getAllItems: (state, action) => {
       state.items = action.payload;
     },
-    // removeAllItemsFromHome: (state) => {
-    //   state.items = null;
-    // },
-    favouritesList: (state, action) => {
-      state.favourites = action.payload;
+    favoritesList: (state, action) => {
+      state.favorites = action.payload;
     },
-    // updateFavourites: (state, action) => {
-    //   state.favourites = action.payload;
-    // },
-    removeFavouritesList: (state) => {
-      state.favourites = null;
+    addFavorites: (state, action) => {
+      state.favorites.push(action.payload);
+    },
+    removeFavorites: (state, action) => {
+      const itemIndex = state.favorites.findIndex(
+        (ele) => ele.item_id === action.payload.item_id
+      );
+
+      state.cartItems.splice(itemIndex, 1);
+    },
+    removeFavoritesList: (state) => {
+      state.favorites = null;
     },
   },
 });
@@ -40,14 +34,15 @@ export const {
   //   removeProductsState,
   //   updateProducts,
   getAllItems,
-  favouritesList,
-  //   updateFavourites,
-  removeFavouritesList,
-  removeAllItemsFromHome,
-} = productSlice.actions;
+  favoritesList,
+  addFavorites,
+  removeFavoritesList,
+  removeFavorites,
+  //removeAllItemsFromHome,
+} = itemsSlice.actions;
 
-export const getProducts = (state) => state.product.products;
-export const getAllProducts = (state) => state.product.items;
-export const getAllFavourites = (state) => state.product.favourites;
+export const getProducts = (state) => state.item.products;
+export const getAllProducts = (state) => state.item.items;
+export const getAllFavourites = (state) => state.item.favourites;
 
-export default productSlice.reducer;
+export default itemsSlice.reducer;

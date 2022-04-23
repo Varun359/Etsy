@@ -107,6 +107,7 @@ exports.insertIntoShop = asyncErrorHandler(async (req, res) => {
     item_desc: req.body.itemDesc,
     item_price: req.body.price,
     item_quantity: req.body.quantity,
+    item_image: req.body.itemImage,
     user: mongoose.Types.ObjectId(req.user.user_id),
   });
 
@@ -126,10 +127,11 @@ exports.editShopItem = asyncErrorHandler(async (req, res) => {
       item_desc: req.body.item_desc,
       item_price: req.body.item_price,
       item_quantity: req.body.item_quantity,
+      item_image: req.body.item_image,
     }
   );
   console.log(doc);
-  res.send(doc);
+  res.send("Item edited succesfully");
 });
 
 //get shop details by Id

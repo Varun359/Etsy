@@ -42,7 +42,7 @@ function ItemOverviewPage() {
   const getImgSrc = (item) => {
     return item.item_image === null
       ? `${BASE_URL}/images/item_image.avif`
-      : `${BASE_URL}/images/${item.item_image}`;
+      : `${item.item_image}`;
   };
 
   const changeQuantity = (value) => {
@@ -107,6 +107,7 @@ function ItemOverviewPage() {
           <div className="info d-flex flex-column justify-content-between">
             <div>
               <h3 className="font-weight-bold">{item.item_name}</h3>
+              {console.log("IN ITEM OVERVIEW", item)}
               <Link to={"/shop/" + item.user_id}>
                 <h4>{item.shop_name}</h4>{" "}
               </Link>

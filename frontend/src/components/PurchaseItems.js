@@ -106,7 +106,7 @@ function PurchaseItems() {
   const getImgSrc = (item) => {
     return item.item_image === null
       ? `${BASE_URL}/images/item_image.avif`
-      : `${BASE_URL}/images/${item.item_image}`;
+      : `${item.item_image}`;
   };
 
   const changeQuantity = (value) => {

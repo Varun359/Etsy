@@ -54,12 +54,12 @@ function CartItems() {
     } else {
       setItems(cartItems);
     }
-  }, []);
+  }, [cartItems]);
 
   const getImgSrc = (item) => {
     return item.item_image === null
       ? `${BASE_URL}/images/item_image.avif`
-      : `${BASE_URL}/images/${item.item_image}`;
+      : `${item.item_image}`;
   };
 
   const changeQuantity = (value) => {
@@ -123,13 +123,14 @@ function CartItems() {
       })
     );
   };
-  const handleProceedToCheckOut = () => {
+  const handleProceedToCheckOut = (e, cartItems) => {
+    console.log("cart items are", cartItems);
     const purchaseData = {
       dateOfPurchase: new Date(),
       items: items,
     };
     console.log("purchaseData", purchaseData);
-    console.log(cookie.cookie.token);
+    // console.log(cookie.cookie.token);
     axios
       .post(`${BASE_URL}/purchasingItems`, purchaseData, {
         headers: {
@@ -164,8 +165,8 @@ function CartItems() {
           </h3>
           <button
             className="btn btn-primary"
-            onClick={(e) => {
-              handleProceedToCheckOut(e);
+            onClick={(e, cartItems) => {
+              handleProceedToCheckOut(e, cartItems);
             }}
           >
             Proceed to checkout
