@@ -190,7 +190,7 @@ function PurchaseItems() {
                   <h4 className="font-weight-bold">{item.item_name}</h4>
                   <h4>{item.shop_name} </h4>
                   <span className="mr-2">Quantity - {item.quantity_buyed}</span>
-                  {console.log(item.gift)}
+                  {console.log("ITEM GIFT", item.gift)}
                   {item.gift !== null && (
                     <span className="mr-2">Gift : {item.gift}</span>
                   )}

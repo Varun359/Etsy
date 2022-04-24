@@ -7,7 +7,7 @@ import { Edit, CameraAlt } from "@material-ui/icons";
 import "./css/editProfile.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../variables";
+import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser, updateUserDetails } from "../features/userSlice";
 import { s3 } from "./configure";
@@ -55,7 +55,7 @@ const EditProfile = () => {
     };
     console.log(data);
     axios
-      .post(`${BASE_URL}/updateProfile`, data, {
+      .post(`${KAFKA_BASE_URL}/updateUserProfile`, data, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
@@ -65,7 +65,7 @@ const EditProfile = () => {
         console.log("Status Code : ", response.status);
         if (response.status === 200) {
           axios
-            .get(`${BASE_URL}/profile`, {
+            .get(`${KAFKA_BASE_URL}/userProfile`, {
               headers: {
                 "auth-token": cookie.cookie.token,
               },
@@ -74,20 +74,23 @@ const EditProfile = () => {
               console.log("Status Code : ", response.status);
               if (response.status === 200) {
                 console.log("In Editprofile", response);
-                let date2 = new Date(response.data.date).toUTCString();
+                let date2 = new Date(response.data.results.date).toUTCString();
                 dispatch(
                   updateUserDetails({
-                    first_name: response.data.first_name,
+                    first_name: response.data.results.first_name,
                     dob: date2,
-                    gender: response.data.gender,
-                    city: response.data.city,
-                    user_image: `${BASE_URL}/images/${response.data.user_image}`,
-                    about: response.data.about,
-                    phone_no: response.data.phone_no,
-                    adddress: response.data.address,
+                    gender: response.data.results.gender,
+                    city: response.data.results.city,
+                    user_image: response.data.results.user_image,
+                    about: response.data.results.about,
+                    phone_no: response.data.results.phone_no,
+                    adddress: response.data.results.address,
                   })
                 );
-                localStorage.setItem("user", JSON.stringify(response.data));
+                localStorage.setItem(
+                  "user",
+                  JSON.stringify(response.data.results)
+                );
                 navigate("/favorite");
               }
             })
@@ -104,7 +107,7 @@ const EditProfile = () => {
   useEffect(() => {
     axios.defaults.withCredentials = true;
     axios
-      .get(`${BASE_URL}/profile`, {
+      .get(`${KAFKA_BASE_URL}/userProfile`, {
         headers: {
           "auth-token": cookie.cookie.token,
         },
@@ -113,32 +116,32 @@ const EditProfile = () => {
         console.log("Status Code : ", response.status);
         if (response.status === 200) {
           console.log("Edit profile", response);
-          setName(response.data.first_name);
-          setGender(response.data.gender);
-          setCity(response.data.city);
-          setEmail(response.data.email);
-          setPhone(response.data.phone_no);
-          setAddress(response.data.address);
-          setAbout(response.data.about);
+          setName(response.data.results.first_name);
+          setGender(response.data.results.gender);
+          setCity(response.data.results.city);
+          setEmail(response.data.results.email);
+          setPhone(response.data.results.phone_no);
+          setAddress(response.data.results.address);
+          setAbout(response.data.results.about);
           let date1;
-          if (response.data.date) {
-            date1 = new Date(response.data.date).toUTCString();
+          if (response.data.results.date) {
+            date1 = new Date(response.data.results.date).toUTCString();
             setDate(date1);
           }
-          setCountry(response.data.country);
-          if (response.data.user_image !== null) {
-            setImageSrc(response.data.user_image);
+          setCountry(response.data.results.country);
+          if (response.data.results.user_image !== null) {
+            setImageSrc(response.data.results.user_image);
           }
           dispatch(
             updateUserDetails({
-              first_name: response.data.first_name,
+              first_name: response.data.results.first_name,
               dob: date1,
-              gender: response.data.gender,
-              city: response.data.city,
-              user_image: `${BASE_URL}/images/${response.data.user_image}`,
-              about: response.data.about,
-              phone_no: response.data.phone_no,
-              adddress: response.data.address,
+              gender: response.data.results.gender,
+              city: response.data.results.city,
+              user_image: response.data.results.user_image,
+              about: response.data.results.about,
+              phone_no: response.data.results.phone_no,
+              adddress: response.data.results.address,
             })
           );
         }

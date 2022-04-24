@@ -5,7 +5,7 @@ import axios from "axios";
 import { useCookies } from "react-cookie";
 import DashboardContext from "./Dashboard-context";
 import { Link } from "react-router-dom";
-import { BASE_URL } from "../variables";
+import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 import { useDispatch, useSelector } from "react-redux";
 import { addFavorites } from "../features/itemsSlice";
 import { removeFavorites } from "../features/itemsSlice";
@@ -50,7 +50,7 @@ function DashBoardItem({
       });
       axios
         .post(
-          `${BASE_URL}/addFavorites/` + itemId,
+          `${KAFKA_BASE_URL}/addFavorites/` + itemId,
           {},
           {
             headers: {
@@ -76,7 +76,7 @@ function DashBoardItem({
     } else {
       axios
         .post(
-          `${BASE_URL}/removeFavorites/` + itemId,
+          `${KAFKA_BASE_URL}/removeFavorites/` + itemId,
           {},
           {
             headers: {

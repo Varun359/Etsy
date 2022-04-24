@@ -8,7 +8,7 @@ import NavBar from "./NavBar";
 import DashboardContext from "./Dashboard-context";
 import HomeContext from "./Home-Context";
 import { useNavigate, Link } from "react-router-dom";
-import { BASE_URL } from "../variables";
+import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart } from "../features/cartItemSlice";
 import { selectUser } from "../features/userSlice";
@@ -24,7 +24,7 @@ function ItemOverviewPage() {
   const { cartCount, setCartCount } = useContext(DashboardContext);
   useEffect(() => {
     axios
-      .get(`${BASE_URL}/itemDetails/${id}`, {
+      .get(`${KAFKA_BASE_URL}/itemDetails/${id}`, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
@@ -35,7 +35,7 @@ function ItemOverviewPage() {
         // console.log(response.data[0]);
         // setItem(response.data[0]);
         console.log("in item Overview use effect", response.data);
-        setItem(response.data);
+        setItem(response.data.results);
       });
   }, []);
 

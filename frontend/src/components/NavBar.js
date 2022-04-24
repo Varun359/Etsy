@@ -10,8 +10,8 @@ import Badge from "@material-ui/core/Badge";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/userSlice";
-import { getCartItems } from "../features/cartItemSlice";
-import { BASE_URL } from "../variables";
+import { getCartItems, clearCart } from "../features/cartItemSlice";
+import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 import { removeFavoritesList } from "../features/itemsSlice";
 import {
   ShoppingCart,
@@ -98,6 +98,7 @@ function NavBar({ callBack }) {
     removeCookie("cookie");
     dispatch(logout());
     dispatch(removeFavoritesList());
+    dispatch(clearCart());
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     handleTriggerRefresh();

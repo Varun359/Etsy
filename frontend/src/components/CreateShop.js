@@ -7,7 +7,7 @@ import HoverBoard from "./HoverBoard";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
-import { BASE_URL } from "../variables";
+import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 import { activeShop, selectUser, updateUserShop } from "../features/userSlice";
 
 function CreateShop() {
@@ -24,7 +24,7 @@ function CreateShop() {
     console.log("hii");
     axios
       .post(
-        `${BASE_URL}/checkShop`,
+        `${KAFKA_BASE_URL}/checkShopName`,
         { shop_name: shopName },
         {
           headers: {
@@ -35,7 +35,7 @@ function CreateShop() {
       )
       .then((response) => {
         console.log(response.data);
-        if (response.status === 200 && !response.data) {
+        if (response.status === 200 && !response.data.results) {
           console.log(response.data);
           setCheckAvailable(true);
         }
@@ -49,7 +49,7 @@ function CreateShop() {
   const createShop = () => {
     axios
       .post(
-        `${BASE_URL}/createShop`,
+        `${KAFKA_BASE_URL}/createShop`,
         { shop_name: shopName },
         {
           headers: {

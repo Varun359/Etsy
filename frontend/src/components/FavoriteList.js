@@ -4,7 +4,7 @@ import "./css/favoriteList.css";
 import { Search } from "@material-ui/icons";
 import axios from "axios";
 import { useCookies } from "react-cookie";
-import { BASE_URL } from "../variables";
+import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 
 import { useDispatch, useSelector } from "react-redux";
 import { favoritesList } from "../features/itemsSlice";
@@ -24,13 +24,15 @@ function FavoriteList() {
 
   useEffect(() => {
     axios
-      .get(`${BASE_URL}/favoriteItems`, {
+      .get(`${KAFKA_BASE_URL}/favoriteItems`, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
         },
       })
       .then((response) => {
+        console.log(response.data);
+        response.data = response.data.results;
         console.log(response.data);
         setData(response.data);
         console.log(data);
@@ -71,7 +73,7 @@ function FavoriteList() {
 
   const searchResults = () => {
     axios
-      .get(`${BASE_URL}/searchFavoriteItems/${search}`, {
+      .get(`${KAFKA_BASE_URL}/searchFavoriteItems/${search}`, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
@@ -79,14 +81,16 @@ function FavoriteList() {
       })
       .then((response) => {
         console.log(response.data);
+        response.data = response.data.results;
         setData(response.data);
-        console.log(data);
+        console.log(response.data);
         var dashBoardData_dummy = [];
         if (response.data === 0) {
           dashBoardData_dummy = "nothing to show";
           setDashBoardData(dashBoardData_dummy);
         } else {
           dashBoardData_dummy = response.data.map((item) => {
+            console.log("ITEMMM IS ", item);
             var ImageSrc =
               item.item_image === null
                 ? `${BASE_URL}/images/item_image.avif`

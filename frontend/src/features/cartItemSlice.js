@@ -36,7 +36,7 @@ export const cartItemsSlice = createSlice({
         (ele) => ele.item_id === action.payload.item_id
       );
 
-      if (state.cartItems[itemIndex].quantity !== 1)
+      if (state.cartItems[itemIndex].quantity !== 0)
         state.cartItems[itemIndex].quantity =
           state.cartItems[itemIndex].quantity - 1;
     },

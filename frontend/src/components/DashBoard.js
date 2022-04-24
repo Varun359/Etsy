@@ -5,7 +5,7 @@ import "./css/dashBoard.css";
 import { useCookies } from "react-cookie";
 import DashboardContext from "./Dashboard-context";
 import ItemOverviewPage from "./ItemOverviewPage";
-import { BASE_URL } from "../variables";
+import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllItems } from "../features/itemsSlice";
 //import { env } from "process";
@@ -47,15 +47,15 @@ function DashBoard({ loggedIn }) {
     // console.log(cookie);
     if (cookie === undefined) {
       axios
-        .get(`${BASE_URL}/allItems`, {
+        .get(`${KAFKA_BASE_URL}/getAllItems`, {
           headers: {
             "content-Type": "application/json",
           },
         })
         .then((response) => {
-          data = response.data;
+          data = response.data.results;
           dispatch(getAllItems(response.data));
-          console.log("This is the response ", response);
+          // console.log("This is the response ", response);
           var dashBoardData_dummy = data.map((item) => {
             console.log(item);
             var ImageSrc =
@@ -85,7 +85,7 @@ function DashBoard({ loggedIn }) {
     } else {
       //console.log("cookie", cookie.token);
       axios
-        .get(`${BASE_URL}/allItemsById`, {
+        .get(`${KAFKA_BASE_URL}/allItemsById`, {
           headers: {
             "content-Type": "application/json",
             "auth-token": cookie.token,
@@ -93,7 +93,7 @@ function DashBoard({ loggedIn }) {
         })
         .then((response) => {
           dispatch(getAllItems(response.data));
-          data = response.data;
+          data = response.data.results;
           // console.log(response);
           var dashBoardData_dummy = data.map((item) => {
             var ImageSrc =

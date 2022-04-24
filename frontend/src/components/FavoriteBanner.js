@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 // import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
-import { BASE_URL } from "../variables";
+import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 function ProfileBanner() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -23,7 +23,7 @@ function ProfileBanner() {
     //let user = JSON.parse(localStorage.getItem("user"));
     setName(user.first_name);
     axios
-      .get(`${BASE_URL}/shopDetails`, {
+      .get(`${KAFKA_BASE_URL}/shopDetails`, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
@@ -33,6 +33,7 @@ function ProfileBanner() {
         console.log("Status Code : ", response.status);
         if (response.status === 200) {
           console.log("in favorite Banner", response.data);
+          response.data = response.data.results;
           //   user["user_image"] = response.data.user_image;
           //   console.log("user ", user);
           if (response.data.user_image != null) {

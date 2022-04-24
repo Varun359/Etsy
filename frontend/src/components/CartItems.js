@@ -5,7 +5,7 @@ import { Navigate, useParams } from "react-router";
 import "./css/itemOverviewPage.css";
 import HoverBoard from "./HoverBoard";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../variables";
+import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getCartItems, clearCart } from "../features/cartItemSlice";
@@ -34,7 +34,7 @@ function CartItems() {
     console.log(cartItems);
     if (cartItems.length === 0) {
       axios
-        .get(`${BASE_URL}/CartItems`, {
+        .get(`${KAFKA_BASE_URL}/CartItems`, {
           headers: {
             "content-Type": "application/json",
             "auth-token": cookie.cookie.token,
@@ -43,9 +43,10 @@ function CartItems() {
         .then((response) => {
           console.log("Status Code : ", response.status);
           if (response.status === 200) {
-            console.log(response.data);
-            setItems(response.data);
-            dispatch(addAllCartItems(response.data));
+            console.log("INSIDE CART ITEMSS");
+            console.log(response.data.results);
+            setItems(response.data.results);
+            dispatch(addAllCartItems(response.data.results));
           }
         })
         .catch((err) => {
@@ -132,7 +133,7 @@ function CartItems() {
     console.log("purchaseData", purchaseData);
     // console.log(cookie.cookie.token);
     axios
-      .post(`${BASE_URL}/purchasingItems`, purchaseData, {
+      .post(`${KAFKA_BASE_URL}/purchasingItems`, purchaseData, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
@@ -141,7 +142,7 @@ function CartItems() {
       .then((response) => {
         console.log("Status Code : ", response.status);
         if (response.status === 200) {
-          console.log(response.data);
+          console.log(response.data.results);
           dispatch(clearCart());
           navigate("/purchases");
         }

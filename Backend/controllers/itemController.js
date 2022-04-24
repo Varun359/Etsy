@@ -12,6 +12,7 @@ exports.getFavoriteItems = asyncErrorHandler(async (req, res) => {
   const documents = await userFavorites
     .find({ user: mongoose.Types.ObjectId(req.user.user_id) })
     .populate("item user");
+  console.log(documents);
   let data = [];
   if (documents.length) {
     for (let doc of documents) {
@@ -147,7 +148,13 @@ exports.searchItems = asyncErrorHandler(async (req, res) => {
     ],
   });
   console.log(req.params);
-  res.send(doc?.length ? doc : "No Search Results");
+  if (doc?.length === 0) res.send("No search Results");
+  else if (doc?.length === 1) {
+    const fav_documents = await userFavorites.find({
+      user: mongoose.Types.ObjectId(doc[0].item_id),
+    });
+  } else res.send(doc);
+  //res.send(doc?.length ? doc : "No Search Results");
 });
 
 //Search Favorites
