@@ -4,7 +4,9 @@ var app = express();
 var bodyParser = require("body-parser");
 var cors = require("cors");
 var kafka = require("./kafka/client");
-const auth = require("./middlewares/auth");
+let passport = require("passport");
+require("./middlewares/passport")(passport);
+let checkAuth = passport.authenticate("jwt", { session: false });
 //use cors to allow cross origin resource sharing
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(bodyParser.json());
@@ -46,7 +48,7 @@ app.get("/getAllItems", function (req, res) {
   });
 });
 
-app.get("/userProfile", auth, function (req, res) {
+app.get("/userProfile", checkAuth, function (req, res) {
   msg = {
     body: req.body,
     user: req.user,
@@ -71,7 +73,7 @@ app.get("/userProfile", auth, function (req, res) {
   });
 });
 
-app.post("/updateUserProfile", auth, function (req, res) {
+app.post("/updateUserProfile", checkAuth, function (req, res) {
   msg = {
     body: req.body,
     user: req.user,
@@ -96,7 +98,7 @@ app.post("/updateUserProfile", auth, function (req, res) {
   });
 });
 
-app.post("/checkshopName", auth, function (req, res) {
+app.post("/checkshopName", checkAuth, function (req, res) {
   kafka.make_request("checkShopName", req.body, function (err, results) {
     console.log("in checkShopName");
     console.log(results);
@@ -117,7 +119,7 @@ app.post("/checkshopName", auth, function (req, res) {
   });
 });
 
-app.get("/changeshopName", auth, function (req, res) {
+app.get("/changeshopName", checkAuth, function (req, res) {
   msg = {
     body: req.body,
     user: req.user,
@@ -142,7 +144,7 @@ app.get("/changeshopName", auth, function (req, res) {
   });
 });
 
-app.get("/shopItems", auth, function (req, res) {
+app.get("/shopItems", checkAuth, function (req, res) {
   msg = {
     body: req.body,
     user: req.user,
@@ -167,7 +169,7 @@ app.get("/shopItems", auth, function (req, res) {
   });
 });
 
-app.get("/shopItems/:user_id", auth, function (req, res) {
+app.get("/shopItems/:user_id", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     params: req.params,
@@ -192,7 +194,7 @@ app.get("/shopItems/:user_id", auth, function (req, res) {
   });
 });
 
-app.get("/shopDetails", auth, function (req, res) {
+app.get("/shopDetails", checkAuth, function (req, res) {
   msg = {
     user: req.user,
   };
@@ -216,7 +218,7 @@ app.get("/shopDetails", auth, function (req, res) {
   });
 });
 
-app.get("/shopDetailsById/:user_id", auth, function (req, res) {
+app.get("/shopDetailsById/:user_id", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     params: req.params,
@@ -241,7 +243,7 @@ app.get("/shopDetailsById/:user_id", auth, function (req, res) {
   });
 });
 
-app.post("/createShop", auth, function (req, res) {
+app.post("/createShop", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     body: req.body,
@@ -266,7 +268,7 @@ app.post("/createShop", auth, function (req, res) {
   });
 });
 
-app.get("/allItemsById", auth, function (req, res) {
+app.get("/allItemsById", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     body: req.body,
@@ -291,7 +293,7 @@ app.get("/allItemsById", auth, function (req, res) {
   });
 });
 
-app.get("/favoriteItems", auth, function (req, res) {
+app.get("/favoriteItems", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     body: req.body,
@@ -316,7 +318,7 @@ app.get("/favoriteItems", auth, function (req, res) {
   });
 });
 
-app.post("/addFavorites/:item_id", auth, function (req, res) {
+app.post("/addFavorites/:item_id", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     params: req.params,
@@ -341,7 +343,7 @@ app.post("/addFavorites/:item_id", auth, function (req, res) {
   });
 });
 
-app.post("/removeFavorites/:item_id", auth, function (req, res) {
+app.post("/removeFavorites/:item_id", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     params: req.params,
@@ -366,7 +368,7 @@ app.post("/removeFavorites/:item_id", auth, function (req, res) {
   });
 });
 
-app.get("/searchItems/:search", auth, function (req, res) {
+app.get("/searchItems/:search", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     params: req.params,
@@ -391,7 +393,7 @@ app.get("/searchItems/:search", auth, function (req, res) {
   });
 });
 
-app.get("/searchFavoriteItems/:search", auth, function (req, res) {
+app.get("/searchFavoriteItems/:search", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     params: req.params,
@@ -415,7 +417,7 @@ app.get("/searchFavoriteItems/:search", auth, function (req, res) {
   });
 });
 
-app.get("/itemDetails/:item_id", auth, function (req, res) {
+app.get("/itemDetails/:item_id", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     params: req.params,
@@ -438,7 +440,7 @@ app.get("/itemDetails/:item_id", auth, function (req, res) {
   });
 });
 
-app.post("/AddToCart", auth, function (req, res) {
+app.post("/AddToCart", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     body: req.body,
@@ -462,7 +464,7 @@ app.post("/AddToCart", auth, function (req, res) {
   });
 });
 
-app.get("/CartItems", auth, function (req, res) {
+app.get("/CartItems", checkAuth, function (req, res) {
   msg = {
     user: req.user,
   };
@@ -484,7 +486,7 @@ app.get("/CartItems", auth, function (req, res) {
   });
 });
 
-app.post("/addAllCartItems", auth, function (req, res) {
+app.post("/addAllCartItems", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     body: req.body,
@@ -509,7 +511,7 @@ app.post("/addAllCartItems", auth, function (req, res) {
   });
 });
 
-app.post("/addAllCartItems", auth, function (req, res) {
+app.post("/addAllCartItems", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     body: req.body,
@@ -534,7 +536,7 @@ app.post("/addAllCartItems", auth, function (req, res) {
   });
 });
 
-app.get("/deleteCartItems", auth, function (req, res) {
+app.get("/deleteCartItems", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     body: req.body,
@@ -559,7 +561,7 @@ app.get("/deleteCartItems", auth, function (req, res) {
   });
 });
 
-app.post("/purchasingItems", auth, function (req, res) {
+app.post("/purchasingItems", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     body: req.body,
@@ -584,7 +586,7 @@ app.post("/purchasingItems", auth, function (req, res) {
   });
 });
 
-app.get("/orders", auth, function (req, res) {
+app.get("/orders", checkAuth, function (req, res) {
   msg = {
     user: req.user,
     body: req.body,

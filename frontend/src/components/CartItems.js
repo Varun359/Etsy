@@ -86,20 +86,29 @@ function CartItems() {
   };
 
   const changeQuantityToRemove = (e, item) => {
-    dispatch(
-      deleteCartItemQuantity({
-        user_id: item.user_id,
-        item_id: item.item_id,
-        quantity: item.quantity,
-        item_name: item.item_name,
-        item_price: item.item_price,
-        item_image: item.item_image,
-        item_desc: item.item_desc,
-        item_category: item.item_category,
-        shop_name: item.shop_name,
-        item_quantity: item.item_quantity,
-      })
-    );
+    if (item.quantity === 0) {
+      console.log("here");
+      dispatch(
+        deleteCartItem({
+          item_id: item.item_id,
+        })
+      );
+    } else {
+      dispatch(
+        deleteCartItemQuantity({
+          user_id: item.user_id,
+          item_id: item.item_id,
+          quantity: item.quantity,
+          item_name: item.item_name,
+          item_price: item.item_price,
+          item_image: item.item_image,
+          item_desc: item.item_desc,
+          item_category: item.item_category,
+          shop_name: item.shop_name,
+          item_quantity: item.item_quantity,
+        })
+      );
+    }
   };
   const removeItemHandler = (e, item) => {
     dispatch(

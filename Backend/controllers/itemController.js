@@ -134,7 +134,7 @@ exports.getAllItemsById = asyncErrorHandler(async (req, res) => {
 //Search Items
 exports.searchItems = asyncErrorHandler(async (req, res) => {
   const searchTerm = new RegExp(req.params.search, "i");
-  const doc = await Item.find({
+  const all_fav = await Item.find({
     $or: [
       {
         item_name: { $regex: searchTerm },
@@ -148,12 +148,84 @@ exports.searchItems = asyncErrorHandler(async (req, res) => {
     ],
   });
   console.log(req.params);
-  if (doc?.length === 0) res.send("No search Results");
-  else if (doc?.length === 1) {
+  if (all_fav?.length === 0) res.send("No search Results");
+  else {
+    var fav_data = [];
+    var un_fav = [];
     const fav_documents = await userFavorites.find({
-      user: mongoose.Types.ObjectId(doc[0].item_id),
+      user: mongoose.Types.ObjectId(req.user.user_id),
     });
-  } else res.send(doc);
+    let items = [];
+    fav_documents.map((docu) => items.push(docu.item.toString()));
+
+    if (all_fav.length) {
+      for (let doc of all_fav) {
+        if (items.includes(doc._id.toString())) {
+          fav_data.push({
+            user_id: doc.user,
+            item_id: doc._id,
+            item_name: doc.item_name,
+            item_price: parseFloat(doc.item_price),
+            item_desc: doc.item_desc,
+            item_quantity: doc.item_quantity,
+            item_category: doc.item_category,
+            item_image: doc.item_image ? doc.item_image : null,
+            sales_count: doc.sales_count,
+            is_Favorite: true,
+            //is_Favorite: items.includes(doc._id.toString()) ? true : false,
+          });
+        } else {
+          un_fav.push({
+            user_id: doc.user,
+            item_id: doc._id,
+            item_name: doc.item_name,
+            item_price: parseFloat(doc.item_price),
+            item_desc: doc.item_desc,
+            item_quantity: doc.item_quantity,
+            item_category: doc.item_category,
+            item_image: doc.item_image ? doc.item_image : null,
+            sales_count: doc.sales_count,
+            is_Favorite: false,
+            // is_Favorite: items.includes(doc._id.toString()) ? true : false,
+          });
+        }
+      }
+    }
+    fav_data = [...fav_data, ...un_fav];
+    res.send(fav_data);
+  }
+  //else res.send(doc);
+  //else if (doc?.length === 1) {
+  //   const document = await userFavorites.find({
+  //     item: mongoose.Types.ObjectId(doc[0].item_id),
+  //   });
+  //   data = [];
+  //   if (document.length === 0) {
+  //     data.push({
+  //       user_id: document.user._id,
+  //       item_id: document.item._id,
+  //       item_name: document.item.item_name,
+  //       item_price: parseFloat(document.item.item_price),
+  //       item_desc: document.item.item_desc,
+  //       item_quantity: document.item.item_quantity,
+  //       item_category: document.item.item_category,
+  //       item_image: document.item.item_image ? document.item.item_image : null,
+  //       is_favorite: false,
+  //     });
+  //   } else {
+  //     data.push({
+  //       user_id: document.user._id,
+  //       item_id: document.item._id,
+  //       item_name: document.item.item_name,
+  //       item_price: parseFloat(document.item.item_price),
+  //       item_desc: document.item.item_desc,
+  //       item_quantity: document.item.item_quantity,
+  //       item_category: document.item.item_category,
+  //       item_image: document.item.item_image ? document.item.item_image : null,
+  //       is_favorite: true,
+  //     });
+  //   }
+  //   res.send(data);
   //res.send(doc?.length ? doc : "No Search Results");
 });
 

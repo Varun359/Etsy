@@ -41,7 +41,7 @@ function SearchDashBoard() {
               price={item.item_price}
               currency={"$"}
               itemId={item.item_id}
-              isFavorite={item.is_favorite}
+              isFavorite={item.is_Favorite}
               handleRefresh={handleRefresh}
             />
           );
@@ -50,7 +50,7 @@ function SearchDashBoard() {
         });
         setDashBoardData(dashBoardData_dummy);
       });
-  }, []);
+  }, [itemsRefresh]);
 
   return (
     <>

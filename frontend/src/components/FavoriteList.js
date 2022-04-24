@@ -57,7 +57,7 @@ function FavoriteList() {
                 currency={"$"}
                 isFavorite={true}
                 itemId={item.item_id}
-                removeElement={removeItemId}
+                handleRefresh={removeItemId}
               />
             );
             if (item.item_name === null) {
