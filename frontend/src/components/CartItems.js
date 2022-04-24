@@ -86,7 +86,7 @@ function CartItems() {
   };
 
   const changeQuantityToRemove = (e, item) => {
-    if (item.quantity === 0) {
+    if (item.quantity === 1) {
       console.log("here");
       dispatch(
         deleteCartItem({
