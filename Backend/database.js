@@ -4,7 +4,11 @@ const MONGO_URI =
 
 const connection = () => {
   mongoose
-    .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .connect(MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      maxPoolSize: 1000,
+    })
     .then(() => {
       console.log("Mongoose Connected");
     });

@@ -8,12 +8,12 @@ let passport = require("passport");
 require("./middlewares/passport")(passport);
 let checkAuth = passport.authenticate("jwt", { session: false });
 //use cors to allow cross origin resource sharing
-app.use(cors({ origin: "http://3.93.193.76:3000", credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(bodyParser.json());
 
 //Allow Access Control
 app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "http://3.93.193.76:3000");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Methods",
