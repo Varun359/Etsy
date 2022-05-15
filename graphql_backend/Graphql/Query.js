@@ -52,7 +52,29 @@ const query = new GraphQLObjectType({
         return args;
       },
     },
-
+    getShopDetails: {
+      type: User,
+      async resolve(parent, args, req) {
+        if (!req.user) throw new Error("Unauthenticated user");
+        console.log("User Id :::: ", req.user.user_id);
+        const doc = await usersDb.find({ _id: req.user.user_id });
+        console.log(doc[0]);
+        return doc[0];
+      },
+    },
+    getShopDetailsById: {
+      type: User,
+      args: {
+        user_id: { type: GraphQLString },
+      },
+      async resolve(parent, args, req) {
+        if (!req.user) throw new Error("Unauthenticated user");
+        console.log("User Id :::: ", req.user.user_id);
+        const doc = await usersDb.find({ _id: args.user_id });
+        console.log(doc[0]);
+        return doc[0];
+      },
+    },
     getAllItemsById: {
       type: new GraphQLList(Items),
       async resolve(parent, args, req) {
@@ -105,16 +127,6 @@ const query = new GraphQLObjectType({
         return all_fav;
       },
     },
-    //     itemDetails:{
-    //         type : Items,
-    //         args : {
-    //           item_id: { type: GraphQLString },
-    //          },
-    //         aysnc resolve(parent, args, req){
-
-    //         }
-
-    //   },
   },
 });
 
