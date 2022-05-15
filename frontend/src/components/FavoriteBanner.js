@@ -23,7 +23,7 @@ function ProfileBanner() {
     //let user = JSON.parse(localStorage.getItem("user"));
     setName(user.first_name);
     axios
-      .get(`${KAFKA_BASE_URL}/shopDetails`, {
+      .get(`${BASE_URL}/shopDetails`, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
@@ -33,7 +33,7 @@ function ProfileBanner() {
         console.log("Status Code : ", response.status);
         if (response.status === 200) {
           console.log("in favorite Banner", response.data);
-          response.data = response.data.results;
+          response.data = response.data;
           //   user["user_image"] = response.data.user_image;
           //   console.log("user ", user);
           if (response.data.user_image != null) {

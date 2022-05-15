@@ -47,13 +47,13 @@ function DashBoard({ loggedIn }) {
     // console.log(cookie);
     if (cookie === undefined) {
       axios
-        .get(`${KAFKA_BASE_URL}/getAllItems`, {
+        .get(`${BASE_URL}/allItems`, {
           headers: {
             "content-Type": "application/json",
           },
         })
         .then((response) => {
-          data = response.data.results;
+          data = response.data;
           dispatch(getAllItems(response.data));
           // console.log("This is the response ", response);
           var dashBoardData_dummy = data.map((item) => {
@@ -85,7 +85,7 @@ function DashBoard({ loggedIn }) {
     } else {
       //console.log("cookie", cookie.token);
       axios
-        .get(`${KAFKA_BASE_URL}/allItemsById`, {
+        .get(`${BASE_URL}/allItemsById`, {
           headers: {
             "content-Type": "application/json",
             "auth-token": cookie.token,
@@ -93,7 +93,7 @@ function DashBoard({ loggedIn }) {
         })
         .then((response) => {
           dispatch(getAllItems(response.data));
-          data = response.data.results;
+          data = response.data;
           // console.log(response);
           var dashBoardData_dummy = data.map((item) => {
             var ImageSrc =

@@ -24,7 +24,7 @@ function CreateShop() {
     console.log("hii");
     axios
       .post(
-        `${KAFKA_BASE_URL}/checkShopName`,
+        `${BASE_URL}/checkShopName`,
         { shop_name: shopName },
         {
           headers: {
@@ -35,7 +35,7 @@ function CreateShop() {
       )
       .then((response) => {
         console.log(response.data);
-        if (response.status === 200 && !response.data.results) {
+        if (response.status === 200 && !response.data) {
           console.log(response.data);
           setCheckAvailable(true);
         }
@@ -49,7 +49,7 @@ function CreateShop() {
   const createShop = () => {
     axios
       .post(
-        `${KAFKA_BASE_URL}/createShop`,
+        `${BASE_URL}/createShop`,
         { shop_name: shopName },
         {
           headers: {

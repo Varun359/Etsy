@@ -34,7 +34,7 @@ function CartItems() {
     console.log(cartItems);
     if (cartItems.length === 0) {
       axios
-        .get(`${KAFKA_BASE_URL}/CartItems`, {
+        .get(`${BASE_URL}/CartItems`, {
           headers: {
             "content-Type": "application/json",
             "auth-token": cookie.cookie.token,
@@ -44,9 +44,9 @@ function CartItems() {
           console.log("Status Code : ", response.status);
           if (response.status === 200) {
             console.log("INSIDE CART ITEMSS");
-            console.log(response.data.results);
-            setItems(response.data.results);
-            dispatch(addAllCartItems(response.data.results));
+            console.log(response.data);
+            setItems(response.data);
+            dispatch(addAllCartItems(response.data));
           }
         })
         .catch((err) => {
@@ -142,7 +142,7 @@ function CartItems() {
     console.log("purchaseData", purchaseData);
     // console.log(cookie.cookie.token);
     axios
-      .post(`${KAFKA_BASE_URL}/purchasingItems`, purchaseData, {
+      .post(`${BASE_URL}/purchasingItems`, purchaseData, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
@@ -151,7 +151,7 @@ function CartItems() {
       .then((response) => {
         console.log("Status Code : ", response.status);
         if (response.status === 200) {
-          console.log(response.data.results);
+          console.log(response.data);
           dispatch(clearCart());
           navigate("/purchases");
         }

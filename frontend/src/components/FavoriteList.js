@@ -24,7 +24,7 @@ function FavoriteList() {
 
   useEffect(() => {
     axios
-      .get(`${KAFKA_BASE_URL}/favoriteItems`, {
+      .get(`${BASE_URL}/favoriteItems`, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
@@ -32,7 +32,7 @@ function FavoriteList() {
       })
       .then((response) => {
         console.log(response.data);
-        response.data = response.data.results;
+        response.data = response.data;
         console.log(response.data);
         setData(response.data);
         console.log(data);
@@ -73,7 +73,7 @@ function FavoriteList() {
 
   const searchResults = () => {
     axios
-      .get(`${KAFKA_BASE_URL}/searchFavoriteItems/${search}`, {
+      .get(`${BASE_URL}/searchFavoriteItems/${search}`, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
@@ -81,7 +81,7 @@ function FavoriteList() {
       })
       .then((response) => {
         console.log(response.data);
-        response.data = response.data.results;
+        response.data = response.data;
         setData(response.data);
         console.log(response.data);
         var dashBoardData_dummy = [];

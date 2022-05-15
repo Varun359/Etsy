@@ -24,7 +24,7 @@ function ItemOverviewPage() {
   const { cartCount, setCartCount } = useContext(DashboardContext);
   useEffect(() => {
     axios
-      .get(`${KAFKA_BASE_URL}/itemDetails/${id}`, {
+      .get(`${BASE_URL}/itemDetails/${id}`, {
         headers: {
           "content-Type": "application/json",
           "auth-token": cookie.cookie.token,
@@ -35,7 +35,7 @@ function ItemOverviewPage() {
         // console.log(response.data[0]);
         // setItem(response.data[0]);
         console.log("in item Overview use effect", response.data);
-        setItem(response.data.results);
+        setItem(response.data);
       });
   }, []);
 

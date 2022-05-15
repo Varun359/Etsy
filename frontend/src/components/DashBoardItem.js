@@ -50,7 +50,7 @@ function DashBoardItem({
       });
       axios
         .post(
-          `${KAFKA_BASE_URL}/addFavorites/` + itemId,
+          `${BASE_URL}/addFavorites/` + itemId,
           {},
           {
             headers: {
@@ -76,7 +76,7 @@ function DashBoardItem({
     } else {
       axios
         .post(
-          `${KAFKA_BASE_URL}/removeFavorites/` + itemId,
+          `${BASE_URL}/removeFavorites/` + itemId,
           {},
           {
             headers: {
