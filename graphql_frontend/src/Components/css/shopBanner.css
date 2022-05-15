@@ -1,0 +1,103 @@
+.shopBanner {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    max-height: 400px;
+    /* box-sizing: border-box; */
+}
+
+.shopBanner__main_img {
+    width: 84px;
+    height: 84px;
+    display: block;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.shopBanner__main {
+    padding: 0.25em;
+}
+
+.shopBanner__main_text {
+    text-align: center;
+}
+
+.shopBanner__shop_img {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
+}
+
+.shopBanner__text {
+    margin-top: 1em;
+    padding: 0 2em;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.shopBanner__text_name {
+    padding-right: 0.5em;
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+.shopBanner__text_icon {
+    color: black;
+    padding: 0.25em 0.3em;
+    background-color: rgba(136, 136, 136, 0.15);
+    border-radius: 50%;
+    margin-top: 0.15em;
+    margin-right: 2em;
+}
+
+.shopBanner__shop_icon {
+    position: absolute;
+    bottom: -5%;
+    right: -5%;
+    padding: 0.25em 0.3em;
+    background-color: rgba(136, 136, 136, 0.15);
+    color: black;
+    border-radius: 50%;
+}
+
+.shopBanner__shop_icon:hover {
+    background-color: rgba(136, 136, 136, 0.5);
+}
+
+.shopBanner_text_sales {
+    margin-top: 0.15em;
+    padding: 0.25em 0.3em;
+}
+
+.shopBanner__shop {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+}
+
+.shopBanner__main:hover {
+    box-shadow: 0px 0px 10px rgba(136, 136, 136, 0.5);
+    padding: 0.25em;
+    box-sizing: border-box;
+}
+
+/* .shopBanner__shop_img {
+    max-width: 100%;
+    max-height: 50px;
+    width: auto;
+    height: auto;
+    display: block;
+} */
+
+.shopBanner__shop_name {
+    font-weight: 400;
+    text-align: center;
+    font-size: 0.9rem;
+    width: 100%;
+}

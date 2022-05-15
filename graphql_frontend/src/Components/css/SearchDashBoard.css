@@ -1,0 +1,5 @@
+.searchItem {
+    display: flex;
+    margin: 4em 0.25em;
+    flex-wrap: wrap;
+}
