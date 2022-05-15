@@ -10,6 +10,8 @@ const {
 } = require("graphql");
 const checkAuth = require("../middlewares/auth");
 const usersDb = require("../models/userModel.js");
+const itemsDb = require("../models/itemModel.js");
+const { default: mongoose } = require("mongoose");
 const mutation = new GraphQLObjectType({
   name: "mutation",
   fields: {
@@ -28,6 +30,7 @@ const mutation = new GraphQLObjectType({
       },
       async resolve(parent, args, req) {
         console.log(args.first_name);
+        console.log(args.gender);
         if (!req.user) throw new Error("Unauthenticated user");
         console.log("User Id :::: ", req.user.user_id);
 
@@ -43,32 +46,83 @@ const mutation = new GraphQLObjectType({
             about: args.about,
             address: args.address,
             gender: args.gender,
+          }
+          //   {
+          //     new: true,
+          //   }
+        );
+      },
+    },
+    insertIntoShop: {
+      type: Items,
+      args: {
+        item_name: { type: GraphQLString },
+        item_price: { type: GraphQLString },
+        item_category: { type: GraphQLString },
+        item_desc: { type: GraphQLString },
+        item_image: { type: GraphQLString },
+        item_quantity: { type: GraphQLInt },
+        user: { type: GraphQLString },
+      },
+      async resolve(parent, args, req) {
+        return await itemsDb.create({
+          item_name: args.item_name,
+          item_price: args.item_price,
+          item_category: args.item_category,
+          item_desc: args.item_desc,
+          item_image: args.item_image,
+          item_quantity: args.item_quantity,
+          user: req.user.user_id,
+        });
+      },
+    },
+    editShopItem: {
+      type: Items,
+      args: {
+        item_id: { type: GraphQLString },
+        item_name: { type: GraphQLString },
+        item_price: { type: GraphQLString },
+        item_category: { type: GraphQLString },
+        item_desc: { type: GraphQLString },
+        item_image: { type: GraphQLString },
+        item_quantity: { type: GraphQLInt },
+        user: { type: GraphQLString },
+      },
+      async resolve(parent, args, req) {
+        return await itemsDb.findByIdAndUpdate(
+          mongoose.Types.ObjectId(args._id),
+          {
+            item_name: args.item_name,
+            item_price: args.item_price,
+            item_category: args.item_category,
+            item_desc: args.item_desc,
+            item_image: args.item_image,
+            item_quantity: args.item_quantity,
+            user: req.user.user_id,
           },
           {
             new: true,
           }
         );
-        // await User.findOneAndUpdate(
-        //   { _id: req.user.user_id },
-        //   { first_name: args.first_name },
-        //   {
-        //     new: true,
-        //   }
-        // );
-        // return "User Profile Updated";
-
-        //     UserController.updateUser(
-        //       args.first_name,
-        //       args.email,
-        //       args.gender,
-        //       args.city,
-        //       args.phone_no,
-        //       args.country,
-        //       args.DOB,
-        //       args.about,
-        //       args.address
-        //     );
-        //     return args;
+      },
+    },
+    createShop: {
+      type: User,
+      args: {
+        shop_name: { type: GraphQLString },
+      },
+      async resolve(parent, args, req) {
+        console.log("Inside Create Shop", req.user.user_id);
+        const doc = await usersDb.findByIdAndUpdate(
+          req.user.user_id,
+          {
+            shop_name: args.shop_name,
+          },
+          {
+            new: true,
+          }
+        );
+        return doc;
       },
     },
   },
