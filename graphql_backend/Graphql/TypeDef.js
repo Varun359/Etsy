@@ -6,6 +6,7 @@ const {
   GraphQLList,
   GraphQLFloat,
   GraphQLInputObjectType,
+  GraphQLBoolean,
 } = require("graphql");
 
 const User = new GraphQLObjectType({
@@ -16,6 +17,7 @@ const User = new GraphQLObjectType({
     email: { type: GraphQLString },
     phone_no: { type: GraphQLString },
     password: { type: GraphQLString },
+    country: { type: GraphQLString },
     DOB: { type: GraphQLString },
     gender: { type: GraphQLString },
     user_image: { type: GraphQLString },
@@ -38,33 +40,51 @@ const Items = new GraphQLObjectType({
     item_desc: { type: GraphQLString },
     item_quantity: { type: GraphQLInt },
     item_image: { type: GraphQLString },
-    // sales: { type: GraphQLInt },
+    // sales_count: { type: GraphQLInt },
+    //isFavorite: { type: GraphQLBoolean },
   }),
 });
 
-// const Cart = new GraphQLObjectType({
-//   name: "Cart",
-//   fields: () => ({
-//     itemId: { type: GraphQLString },
-//     qty: { type: GraphQLInt },
-//   }),
-// });
+const Cart = new GraphQLObjectType({
+  name: "Cart",
+  fields: () => ({
+    item: { type: GraphQLString },
+    user: { type: GraphQLString },
+    quantity: { type: GraphQLInt },
+    gift: { type: GraphQLString },
+    give_gift: { type: GraphQLBoolean },
+  }),
+});
 
-// const Purchases = new GraphQLObjectType({
-//   name: "Purchases",
-//   fields: () => ({
-//     itemId: { type: GraphQLString },
-//     userId: { type: GraphQLString },
-//     itemName: { type: GraphQLString },
-//     itemImage: { type: GraphQLInt },
-//     itemCount: { type: GraphQLFloat },
-//     totalPrice: { type: GraphQLFloat },
-//     qty: { type: GraphQLInt },
-//     itemDescription: { type: GraphQLString },
-//     giftMessage: { type: GraphQLString },
-//   }),
-// });
+const Purchases = new GraphQLObjectType({
+  name: "Purchases",
+  fields: () => ({
+    item: { type: GraphQLString },
+    user: { type: GraphQLString },
+    order: { type: GraphQLString },
+    quantity_buyed: { type: GraphQLInt },
+    price_buyed: { type: GraphQLString },
+    item_name: { type: GraphQLString },
+    item_image: { type: GraphQLString },
+    shop_name: { type: GraphQLString },
+    gift: { type: GraphQLString },
+  }),
+});
 
+const Orders = new GraphQLObjectType({
+  name: "Orders",
+  fields: () => ({
+    date: { type: GraphQLString },
+  }),
+});
+
+const UserFavorites = new GraphQLObjectType({
+  name: "UserFavorites",
+  fields: () => ({
+    item: { type: GraphQLString },
+    user: { type: GraphQLString },
+  }),
+});
 // const AuthData = new GraphQLObjectType({
 //   name: "AuthData",
 //   fields: () => ({
@@ -78,7 +98,9 @@ const Items = new GraphQLObjectType({
 module.exports = {
   User,
   Items,
-  //   Cart,
-  //   Purchases,
-  //   AuthData,
+  Cart,
+  Purchases,
+  Orders,
+  UserFavorites,
+  //authData,
 };
