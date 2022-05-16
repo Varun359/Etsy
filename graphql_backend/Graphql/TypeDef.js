@@ -45,11 +45,36 @@ const Items = new GraphQLObjectType({
   }),
 });
 
+const Items_Rel = new GraphQLObjectType({
+  name: "Items_Rel",
+  fields: () => ({
+    _id: { type: GraphQLString },
+    user: { type: User },
+    item_name: { type: GraphQLString },
+    item_category: { type: GraphQLString },
+    item_price: { type: GraphQLString },
+    item_desc: { type: GraphQLString },
+    item_quantity: { type: GraphQLInt },
+    item_image: { type: GraphQLString },
+  }),
+});
+
 const Cart = new GraphQLObjectType({
   name: "Cart",
   fields: () => ({
-    item: { type: GraphQLString },
-    user: { type: GraphQLString },
+    item_id: { type: GraphQLString },
+    user_id: { type: GraphQLString },
+    quantity: { type: GraphQLInt },
+    gift: { type: GraphQLString },
+    give_gift: { type: GraphQLBoolean },
+  }),
+});
+
+const Cart_Rel = new GraphQLObjectType({
+  name: "Cart_Rel",
+  fields: () => ({
+    item: { type: Items },
+    user: { type: User },
     quantity: { type: GraphQLInt },
     gift: { type: GraphQLString },
     give_gift: { type: GraphQLBoolean },
@@ -62,6 +87,21 @@ const Purchases = new GraphQLObjectType({
     item: { type: GraphQLString },
     user: { type: GraphQLString },
     order: { type: GraphQLString },
+    quantity_buyed: { type: GraphQLInt },
+    price_buyed: { type: GraphQLString },
+    item_name: { type: GraphQLString },
+    item_image: { type: GraphQLString },
+    shop_name: { type: GraphQLString },
+    gift: { type: GraphQLString },
+  }),
+});
+
+const Purchases_Rel = new GraphQLObjectType({
+  name: "Purchases_Rel",
+  fields: () => ({
+    item: { type: Items },
+    user: { type: User },
+    order: { type: Orders },
     quantity_buyed: { type: GraphQLInt },
     price_buyed: { type: GraphQLString },
     item_name: { type: GraphQLString },
@@ -102,5 +142,8 @@ module.exports = {
   Purchases,
   Orders,
   UserFavorites,
+  Cart_Rel,
+  Purchases_Rel,
+  Items_Rel,
   //authData,
 };
