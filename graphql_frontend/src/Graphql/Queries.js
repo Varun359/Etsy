@@ -62,3 +62,26 @@ export const GET_SHOP_DETAILSBYID = gql`
     }
   }
 `;
+
+export const GET_CART_ITEMS = gql`
+  query {
+    getCartItems {
+      item {
+        _id
+        item_name
+        item_price
+        item_desc
+        item_quantity
+        item_category
+        item_image
+      }
+      user {
+        _id
+        shop_name
+      }
+      quantity
+      gift
+      give_gift
+    }
+  }
+`;
