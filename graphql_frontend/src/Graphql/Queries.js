@@ -14,3 +14,23 @@ export const LOAD_ITEMS = gql`
     }
   }
 `;
+
+export const GET_USER_DETAILS = gql`
+  query getUserDetails($user_id: String) {
+    getUserDetails(user_id: $user_id) {
+      first_name
+      email
+      _id
+      country
+      about
+      phone_no
+      gender
+      city
+      address
+      DOB
+      shop_image
+      shop_name
+      user_image
+    }
+  }
+`;
