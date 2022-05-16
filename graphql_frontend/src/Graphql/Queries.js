@@ -42,3 +42,23 @@ export const CHECK_SHOP_NAME = gql`
     }
   }
 `;
+
+export const GET_SHOP_DETAILS = gql`
+  query {
+    getShopDetails {
+      shop_name
+      shop_image
+      user_image
+    }
+  }
+`;
+
+export const GET_SHOP_DETAILSBYID = gql`
+  query getShopDetailsById($user_id: String) {
+    getShopDetailsById(user_id: $user_id) {
+      shop_name
+      shop_image
+      user_image
+    }
+  }
+`;
