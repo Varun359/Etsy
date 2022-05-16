@@ -46,3 +46,11 @@ export const UPDATE_USER_PROFILE = gql`
     }
   }
 `;
+
+export const DELETE_CART_ITEMS = gql`
+  mutation deleteCartItems {
+    deleteCartItems {
+      quantity
+    }
+  }
+`;
