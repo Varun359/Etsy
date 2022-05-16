@@ -143,3 +143,21 @@ export const GET_SHOP_ITEMSBYID = gql`
     }
   }
 `;
+
+export const GET_ITEM_DETAILS = gql`
+  query getItemDetails($item_id: String) {
+    getItemDetails(item_id: $item_id) {
+      user {
+        first_name
+        shop_name
+        shop_image
+      }
+      item_name
+      item_category
+      item_price
+      item_desc
+      item_quantity
+      item_image
+    }
+  }
+`;
