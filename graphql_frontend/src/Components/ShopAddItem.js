@@ -6,7 +6,8 @@ import { useCookies, CookiesProvider } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../variables";
 import { s3 } from "./configure";
-
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { INSERT_INTO_SHOP } from "../Graphql/Mutation";
 function ShopAddItem({ isOpen, closeModal, setLoginStatus }) {
   const [itemName, setItemName] = useState("");
   const [category, setCategory] = useState("");
@@ -20,6 +21,15 @@ function ShopAddItem({ isOpen, closeModal, setLoginStatus }) {
     `${BASE_URL}/images/shop_default.png`
   );
   const navigate = useNavigate();
+
+  const [insertIntoShop] = useMutation(INSERT_INTO_SHOP, {
+    onCompleted(res) {
+      console.log(res);
+    },
+    onError(e) {
+      console.log(e.message);
+    },
+  });
 
   const changeHandlerGeneric = (value, setterFunc) => {
     console.log(value);
@@ -60,12 +70,21 @@ function ShopAddItem({ isOpen, closeModal, setLoginStatus }) {
     };
     setItemImage(imageUrl);
   };
+
+  // useEffect(() => {
+  //   if (data !== undefined) console.log("User Details", data);
+  // }, [data]);
+
   const submitForm = () => {
+    console.log("I am here in the submit form");
     const user = localStorage.getItem("user");
     console.log("user is .......", user);
     // e.preventDefault();
+    const user_local = JSON.parse(localStorage.getItem("user"));
+    const userId = user_local.user_id;
     console.log(cookie);
     const data = {
+      user_id: userId,
       itemName: itemName,
       category: category !== "Custom" ? category : customCategory,
       itemDesc: itemDesc,
@@ -76,16 +95,27 @@ function ShopAddItem({ isOpen, closeModal, setLoginStatus }) {
     console.log(data);
     //localStorage.setItem("shopdata", JSON.stringify(data));
     console.log(cookie.cookie.token);
-    axios
-      .post(`${BASE_URL}/insertItems`, data, {
-        headers: {
-          "content-Type": "application/json",
-          "auth-token": cookie.cookie.token,
-        },
-      })
+    // axios
+    //   .post(`${BASE_URL}/insertItems`, data, {
+    //     headers: {
+    //       "content-Type": "application/json",
+    //       "auth-token": cookie.cookie.token,
+    //     },
+    //   })
+    insertIntoShop({
+      variables: {
+        user_id: userId,
+        item_name: data.itemName,
+        item_category: data.category,
+        item_desc: data.itemDesc,
+        item_price: data.price,
+        item_quantity: Number(data.quantity),
+        item_image: data.itemImage,
+      },
+    })
       .then((response) => {
-        console.log("Status Code : ", response.status);
-        if (response.status === 200) {
+        // console.log("Status Code : ", response.status);
+        if (response) {
           console.log(response, "user", user);
           setUpdated(true);
           setItemName("");

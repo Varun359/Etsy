@@ -100,7 +100,7 @@ const EditProfile = () => {
           //       "auth-token": cookie.cookie.token,
           //     },
           //   })
-          console.log("The data is responbse", data);
+          console.log("The data is response", data);
           // console.log("Status Code : ", response.status);
           // if (response.status === 200) {
           //   console.log("In Editprofile", response);

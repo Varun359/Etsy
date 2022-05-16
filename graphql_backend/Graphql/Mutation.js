@@ -67,6 +67,7 @@ const mutation = new GraphQLObjectType({
         item_quantity: { type: GraphQLInt },
       },
       async resolve(parent, args) {
+        console.log(args);
         return await itemsDb.create({
           item_name: args.item_name,
           item_price: args.item_price,

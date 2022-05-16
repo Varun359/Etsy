@@ -48,7 +48,7 @@ export const UPDATE_USER_PROFILE = gql`
 `;
 
 export const ADD_ITEMS_TO_CART = gql`
-  mutation editProfile($user_id: String, $item_id: String, $quantity: int) {
+  mutation editProfile($user_id: String, $item_id: String, $quantity: Int) {
     editProfile(user_id: $user_id, item_id: $item_id, quantity: $quantity) {
       item {
         item_name
@@ -83,12 +83,12 @@ export const INSERT_INTO_SHOP = gql`
     $item_price: String
     $item_category: String
     $item_desc: String
-    $item_quantity: int
+    $item_quantity: Int
     $item_image: String
   ) {
     insertIntoShop(
       user_id: $user_id
-      item_name: $user_id
+      item_name: $item_name
       item_price: $item_price
       item_category: $item_category
       item_desc: $item_desc
@@ -112,7 +112,7 @@ export const EDIT_SHOP_ITEM = gql`
     $item_price: String
     $item_category: String
     $item_desc: String
-    $item_quantity: int
+    $item_quantity: Int
     $item_image: String
   ) {
     editShopItem(
