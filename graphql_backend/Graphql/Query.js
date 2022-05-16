@@ -36,23 +36,27 @@ const query = new GraphQLObjectType({
     },
     getUserDetails: {
       type: User,
-      async resolve(parent, args, req) {
-        if (!req.user) throw new Error("Unauthenticated user");
-        console.log("User Id :::: ", req.user.user_id);
+      args: {
+        user_id: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        console.log("User Id :::: ", args.user_id);
         return await usersDb.findOne({
-          _id: req.user.user_id,
+          _id: args.user_id,
         });
       },
     },
+
     checkShopName: {
       type: User,
       args: {
+        user_id: { type: GraphQLString },
         shop_name: { type: GraphQLString },
       },
-      async resolve(parent, args, req) {
+      async resolve(parent, args) {
         console.log(args.shop_name);
-        if (!req.user) throw new Error("Unauthenticated user");
-        console.log("User Id :::: ", req.user.user_id);
+        //if (!req.user) throw new Error("Unauthenticated user");
+        console.log("User Id :::: ", args.user_id);
         const shopAvailability = await usersDb
           .findOne({ shop_name: args.shop_name })
           .count();
@@ -63,10 +67,13 @@ const query = new GraphQLObjectType({
     },
     getShopDetails: {
       type: User,
-      async resolve(parent, args, req) {
-        if (!req.user) throw new Error("Unauthenticated user");
-        console.log("User Id :::: ", req.user.user_id);
-        const doc = await usersDb.find({ _id: req.user.user_id });
+      args: {
+        user_id: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        // if (!req.user) throw new Error("Unauthenticated user");
+        console.log("User Id :::: ", args.user_id);
+        const doc = await usersDb.find({ _id: args.user_id });
         console.log(doc[0]);
         return doc[0];
       },
@@ -76,9 +83,9 @@ const query = new GraphQLObjectType({
       args: {
         user_id: { type: GraphQLString },
       },
-      async resolve(parent, args, req) {
-        if (!req.user) throw new Error("Unauthenticated user");
-        console.log("User Id :::: ", req.user.user_id);
+      async resolve(parent, args) {
+        //if (!req.user) throw new Error("Unauthenticated user");
+        console.log("User Id :::: ", args.user_id);
         const doc = await usersDb.find({ _id: args.user_id });
         console.log(doc[0]);
         return doc[0];
@@ -86,10 +93,13 @@ const query = new GraphQLObjectType({
     },
     getCartItems: {
       type: new GraphQLList(Cart_Rel),
-      async resolve(parent, args, req) {
+      args: {
+        user_id: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
         const documents = await cartDb
           .find({
-            user: mongoose.Types.ObjectId(req.user.user_id),
+            user: mongoose.Types.ObjectId(args.user_id),
           })
           .populate("item user");
 
@@ -99,20 +109,26 @@ const query = new GraphQLObjectType({
     },
     getPreviousOrders: {
       type: new GraphQLList(Purchases_Rel),
-      async resolve(parent, args, req) {
+      args: {
+        user_id: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
         return await purchaseDb
           .find({
-            user: mongoose.Types.ObjectId(req.user.user_id),
+            user: mongoose.Types.ObjectId(args.user_id),
           })
           .populate("order");
       },
     },
     getShopItems: {
       type: new GraphQLList(Items_Rel),
-      async resolve(parent, args, req) {
+      args: {
+        user_id: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
         return await itemsDb
           .find({
-            user: mongoose.Types.ObjectId(req.user.user_id),
+            user: mongoose.Types.ObjectId(args.user_id),
           })
           .populate("user");
       },
@@ -122,7 +138,7 @@ const query = new GraphQLObjectType({
       args: {
         user_id: { type: GraphQLString },
       },
-      async resolve(parent, args, req) {
+      async resolve(parent, args) {
         return await itemsDb
           .find({
             user: mongoose.Types.ObjectId(args.user_id),
@@ -133,20 +149,24 @@ const query = new GraphQLObjectType({
     getItemDetails: {
       type: Items_Rel,
       args: {
+        user_id: { type: GraphQLString },
         item_id: { type: GraphQLString },
       },
-      async resolve(parent, args, req) {
+      async resolve(parent, args) {
         return await itemsDb.findById(args.item_id).populate("user");
       },
     },
     getAllItemsById: {
       type: new GraphQLList(Items),
-      async resolve(parent, args, req) {
+      args: {
+        user_id: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
         console.log("Inside get all elements by id with favs");
         var fav_data = [];
         var un_fav = [];
         const fav_documents = await userFavorites.find({
-          user: mongoose.Types.ObjectId(req.user.user_id),
+          user: mongoose.Types.ObjectId(args.user_id),
         });
         let items = [];
         fav_documents.map((doc) => items.push(doc.item.toString()));
