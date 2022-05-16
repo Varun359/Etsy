@@ -47,7 +47,20 @@ export const UPDATE_USER_PROFILE = gql`
   }
 `;
 
-export const DELETE_CART_ITEMS = gql`
+export const ADD_ITEMS_TO_CART = gql`
+  mutation editProfile($user_id: String, $item_id: String, $quantity: int) {
+    editProfile(user_id: $user_id, item_id: $item_id, quantity: $quantity) {
+      item {
+        item_name
+        item_image
+        item_price
+      }
+      quantity
+    }
+  }
+`;
+
+export const DELETE_ITEMS_FROM_CART = gql`
   mutation deleteCartItems {
     deleteCartItems {
       quantity
