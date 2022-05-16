@@ -62,3 +62,59 @@ export const CREATE_SHOP = gql`
     }
   }
 `;
+
+export const INSERT_INTO_SHOP = gql`
+  mutation insertIntoShop(
+    $item_name: String
+    $item_price: String
+    $item_category: String
+    $item_desc: String
+    $item_quantity: int
+    $item_image: String
+  ) {
+    insertIntoShop(
+      item_name: $user_id
+      item_price: $item_price
+      item_category: $item_category
+      item_desc: $item_desc
+      item_quantity: $item_quantity
+      item_image: $item_image
+    ) {
+      item_name
+      item_price
+      item_quantity
+      item_desc
+      item_quantity
+      item_image
+    }
+  }
+`;
+
+export const EDIT_SHOP_ITEM = gql`
+  mutation editShopItem(
+    $item_id: String
+    $item_name: String
+    $item_price: String
+    $item_category: String
+    $item_desc: String
+    $item_quantity: int
+    $item_image: String
+  ) {
+    editShopItem(
+      item_id: $item_id
+      item_name: $user_id
+      item_price: $item_price
+      item_category: $item_category
+      item_desc: $item_desc
+      item_quantity: $item_quantity
+      item_image: $item_image
+    ) {
+      item_name
+      item_price
+      item_quantity
+      item_desc
+      item_quantity
+      item_image
+    }
+  }
+`;
