@@ -1,4 +1,4 @@
-const { Cart, Items, User } = require("./TypeDef");
+const { Cart, Items, User, Cart_Rel } = require("./TypeDef");
 const UserController = require("../controllers/userController");
 const {
   GraphQLSchema,
@@ -131,7 +131,7 @@ const mutation = new GraphQLObjectType({
       },
     },
     addItemToCart: {
-      type: Cart,
+      type: Cart_Rel,
       args: {
         user_id: { type: GraphQLString },
         item_id: { type: GraphQLString },

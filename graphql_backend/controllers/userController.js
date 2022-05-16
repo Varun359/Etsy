@@ -41,6 +41,7 @@ exports.registerUser = asyncErrorHandler(async (req, res, next) => {
       httpOnly: false,
       path: "/",
     });
+
     console.log(data);
     res.user = data;
     console.log(res);

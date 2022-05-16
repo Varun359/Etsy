@@ -5,20 +5,25 @@ const cartSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "User",
     required: true,
+    //default: "",
   },
   item: {
     type: mongoose.Schema.ObjectId,
     ref: "Item",
     required: true,
+    //default: "",
   },
   quantity: {
     type: Number,
+    // default: "",
   },
   gift: {
     type: String,
+    // default: "",
   },
   give_gift: {
     type: Boolean,
+    // default: false,
   },
 });
 
