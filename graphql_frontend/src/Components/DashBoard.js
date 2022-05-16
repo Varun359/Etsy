@@ -5,13 +5,17 @@ import "./css/dashBoard.css";
 import { useCookies } from "react-cookie";
 import DashboardContext from "./Dashboard-context";
 import ItemOverviewPage from "./ItemOverviewPage";
-import { BASE_URL, KAFKA_BASE_URL } from "../variables";
+import { BASE_URL, KAFKA_BASE_URL, GRAPHQL_BASE_URL } from "../variables";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllItems } from "../features/itemsSlice";
+import { useQuery, gql } from "@apollo/client";
+import { LOAD_ITEMS } from "../Graphql/Queries";
 //import { env } from "process";
 function DashBoard({ loggedIn }) {
+  const { error, loading, data } = useQuery(LOAD_ITEMS);
   const dispatch = useDispatch();
-  var data = [];
+
+  var data_arr = [];
   var [dashBoardData, setDashBoardData] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const [cookie, setCookie] = useState(undefined);
@@ -32,6 +36,8 @@ function DashBoard({ loggedIn }) {
   //console.log(cookie);
   useEffect(() => {
     //console.log(cookie);
+    if (data !== undefined)
+      console.log("All Items from graphql", data.getAllItems);
     var cookies = decodeURIComponent(document.cookie).split(";");
     cookies.forEach((cookieEle) => {
       //console.log(cookieEle);
@@ -45,45 +51,71 @@ function DashBoard({ loggedIn }) {
       }
     });
     // console.log(cookie);
-    if (cookie === undefined) {
-      axios
-        .get(`${BASE_URL}/allItems`, {
-          headers: {
-            "content-Type": "application/json",
-          },
-        })
-        .then((response) => {
-          data = response.data;
-          dispatch(getAllItems(response.data));
-          // console.log("This is the response ", response);
-          var dashBoardData_dummy = data.map((item) => {
-            console.log(item);
-            var ImageSrc =
-              item.item_image === null
-                ? `${BASE_URL}/images/item_image.avif`
-                : `${item.item_image}`;
-            var dashBoardItem = (
-              <DashBoardItem
-                key={item.item_id}
-                src={ImageSrc}
-                name={item.item_name}
-                shopName={item.shoop_name}
-                price={item.item_price}
-                currency={"$"}
-                itemId={item.item_id}
-                isFavorite={item.is_favorite}
-                handleRefresh={handleRefresh}
-              />
-            );
-            if (item.item_name === null) {
-              return null;
-            }
-            return dashBoardItem;
-          });
-          setDashBoardData(dashBoardData_dummy);
-        });
-    } else {
-      //console.log("cookie", cookie.token);
+    if (cookie === undefined && data !== undefined) {
+      // axios
+      //   .get(`${GRAPHQL_BASE_URL}/allItems`, {
+      //     headers: {
+      //       "content-Type": "application/json",
+      //     },
+      //   })
+      //   .then((response) => {
+      //     data_arr = response.data;
+      //     console.log("Data array in axios", data_arr);
+      //     dispatch(getAllItems(response.data));
+      //     // console.log("This is the response ", response);
+      //     var dashBoardData_dummy = data_arr.map((item) => {
+      //       console.log(item);
+      //       var ImageSrc =
+      //         item.item_image === null
+      //           ? `${BASE_URL}/images/item_image.avif`
+      //           : `${item.item_image}`;
+      //       var dashBoardItem = (
+      //         <DashBoardItem
+      //           key={item.item_id}
+      //           src={ImageSrc}
+      //           name={item.item_name}
+      //           shopName={item.shop_name}
+      //           price={item.item_price}
+      //           currency={"$"}
+      //           itemId={item.item_id}
+      //           isFavorite={item.is_favorite}
+      //           handleRefresh={handleRefresh}
+      //         />
+      //       );
+      //       if (item.item_name === null) {
+      //         return null;
+      //       }
+      //       return dashBoardItem;
+      //     });
+      //     setDashBoardData(dashBoardData_dummy);
+      //   });
+      var dashBoardData_dummy = data.getAllItems.map((item) => {
+        console.log(item);
+        var ImageSrc =
+          item.item_image === null
+            ? `${GRAPHQL_BASE_URL}/images/item_image.avif`
+            : `${item.item_image}`;
+        var dashBoardItem = (
+          <DashBoardItem
+            key={item._id}
+            src={ImageSrc}
+            name={item.item_name}
+            shopName={item.shop_name}
+            price={item.item_price}
+            currency={"$"}
+            itemId={item._id}
+            isFavorite={item.is_favorite}
+            handleRefresh={handleRefresh}
+          />
+        );
+        if (item.item_name === null) {
+          return null;
+        }
+        return dashBoardItem;
+      });
+      setDashBoardData(dashBoardData_dummy);
+    } else if (cookie !== undefined) {
+      console.log("cookie", cookie.token);
       axios
         .get(`${BASE_URL}/allItemsById`, {
           headers: {
@@ -93,9 +125,9 @@ function DashBoard({ loggedIn }) {
         })
         .then((response) => {
           dispatch(getAllItems(response.data));
-          data = response.data;
+          data_arr = response.data;
           // console.log(response);
-          var dashBoardData_dummy = data.map((item) => {
+          var dashBoardData_dummy = data_arr.map((item) => {
             var ImageSrc =
               item.item_image === null
                 ? `${BASE_URL}/images/item_image.avif`
@@ -125,7 +157,7 @@ function DashBoard({ loggedIn }) {
           setDashBoardData(dashBoardData_dummy);
         });
     }
-  }, [loggedIn, refresh, itemsRefresh]);
+  }, [loggedIn, refresh, itemsRefresh, data]);
 
   return (
     <DashboardContext.Provider value={values}>

@@ -11,7 +11,9 @@ import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser, updateUserDetails } from "../features/userSlice";
 import { s3 } from "./configure";
-
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { UPDATE_USER_PROFILE } from "../Graphql/Mutation";
+import { GET_USER_DETAILS } from "../Graphql/Queries";
 const EditProfile = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
@@ -33,6 +35,16 @@ const EditProfile = () => {
   const [cookie, setCookie] = useCookies(["cookie"]);
   const [updated, setUpdated] = useState(false);
   const selectOptions = [];
+  const user_local = JSON.parse(localStorage.getItem("user"));
+  const userId = user_local.user_id;
+  const [editProfile] = useMutation(UPDATE_USER_PROFILE, {
+    onCompleted(res) {
+      console.log(res);
+    },
+    onError(e) {
+      console.log(e.message);
+    },
+  });
 
   options.map((option) => {
     selectOptions.push(<option value={option.label}>{option.label}</option>);
@@ -41,6 +53,9 @@ const EditProfile = () => {
     console.log(value);
     setterFunc(value);
   };
+  const { error, loading, data } = useQuery(GET_USER_DETAILS, {
+    variables: { user_id: userId },
+  });
   const updateProfile = () => {
     const data = {
       name: name,
@@ -53,47 +68,57 @@ const EditProfile = () => {
       date: date,
       about: about,
     };
-    console.log(data);
-    axios
-      .post(`${BASE_URL}/updateUserProfile`, data, {
-        headers: {
-          "content-Type": "application/json",
-          "auth-token": cookie.cookie.token,
-        },
-      })
+    console.log("Data", data);
+    // axios
+    //   .post(`${BASE_URL}/updateUserProfile`, data, {
+    //     headers: {
+    //       "content-Type": "application/json",
+    //       "auth-token": cookie.cookie.token,
+    //     },
+    //   })
+
+    editProfile({
+      variables: {
+        user_id: userId,
+        name: data.name,
+        gender: data.gender,
+        city: data.city,
+        phone_no: data.phone,
+        address: data.address,
+        country: data.country,
+        email: data.email,
+        date: data.date,
+        about: data.about,
+      },
+    })
       .then((response) => {
-        console.log("Status Code : ", response.status);
-        if (response.status === 200) {
-          axios
-            .get(`${BASE_URL}/userProfile`, {
-              headers: {
-                "auth-token": cookie.cookie.token,
-              },
+        console.log("Status Code : ", response);
+        if (response) {
+          // axios
+          //   .get(`${BASE_URL}/profile`, {
+          //     headers: {
+          //       "auth-token": cookie.cookie.token,
+          //     },
+          //   })
+          console.log("The data is responbse", data);
+          // console.log("Status Code : ", response.status);
+          // if (response.status === 200) {
+          //   console.log("In Editprofile", response);
+          let date2 = new Date(data.date).toUTCString();
+          dispatch(
+            updateUserDetails({
+              first_name: data.first_name,
+              dob: date2,
+              gender: data.gender,
+              city: data.city,
+              user_image: data.user_image,
+              about: data.about,
+              phone_no: data.phone_no,
+              adddress: data.address,
             })
-            .then((response) => {
-              console.log("Status Code : ", response.status);
-              if (response.status === 200) {
-                console.log("In Editprofile", response);
-                let date2 = new Date(response.data.date).toUTCString();
-                dispatch(
-                  updateUserDetails({
-                    first_name: response.data.first_name,
-                    dob: date2,
-                    gender: response.data.gender,
-                    city: response.data.city,
-                    user_image: response.data.user_image,
-                    about: response.data.about,
-                    phone_no: response.data.phone_no,
-                    adddress: response.data.address,
-                  })
-                );
-                localStorage.setItem("user", JSON.stringify(response.data));
-                navigate("/favorite");
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          );
+          localStorage.setItem("user", JSON.stringify(data));
+          navigate("/favorite");
           setUpdated(true);
         }
       })
@@ -102,9 +127,16 @@ const EditProfile = () => {
       });
   };
   useEffect(() => {
+    const userProfile = JSON.parse(localStorage.getItem("user"));
+    console.log(
+      "====================================== user id ======================================"
+    );
+    console.log(userProfile);
+    console.log(userProfile.user_id);
+    if (data !== undefined) console.log("User Details", data);
     axios.defaults.withCredentials = true;
     axios
-      .get(`${BASE_URL}/userProfile`, {
+      .get(`${BASE_URL}/profile`, {
         headers: {
           "auth-token": cookie.cookie.token,
         },
@@ -148,7 +180,7 @@ const EditProfile = () => {
       });
     setName(cookie.cookie.first_name);
     setEmail(cookie.cookie.email);
-  }, []);
+  }, [data]);
   const changeImage = async (data) => {
     console.log("The data", data.name);
     const formData = new FormData();

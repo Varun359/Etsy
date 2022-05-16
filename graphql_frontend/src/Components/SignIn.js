@@ -4,7 +4,7 @@ import Register from "./Register";
 import { Navigate } from "react-router-dom";
 import { Cancel } from "@material-ui/icons";
 import axios from "axios";
-import { BASE_URL } from "../variables";
+import { BASE_URL, GRAPHQL_BASE_URL } from "../variables";
 import { useDispatch } from "react-redux";
 import { login } from "../features/userSlice";
 
@@ -12,6 +12,7 @@ function SignIn({ handleTriggerRefresh, isOpen, closeModal, openRe }) {
   const [showRegister, setshowRegister] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [user_id, setUserId] = useState("");
   const [inValidCredentials, setInvalidCredentials] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const emailChangeHandler = (e) => {
@@ -20,6 +21,10 @@ function SignIn({ handleTriggerRefresh, isOpen, closeModal, openRe }) {
 
   const passwordChangeHandler = (e) => {
     setPassword(e.target.value);
+  };
+
+  const userIdChangeHandler = (e) => {
+    setUserId(e.target.value);
   };
 
   const dispatch = useDispatch();
@@ -42,7 +47,7 @@ function SignIn({ handleTriggerRefresh, isOpen, closeModal, openRe }) {
 
     axios.defaults.withCredentials = true;
     axios
-      .post(`${BASE_URL}/login`, data)
+      .post(`${GRAPHQL_BASE_URL}/login`, data)
       .then((response) => {
         console.log("Status Code : ", response.status);
         if (response.status === 200) {
