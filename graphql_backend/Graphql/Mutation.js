@@ -19,6 +19,7 @@ const mutation = new GraphQLObjectType({
     editProfile: {
       type: User,
       args: {
+        user_id: { type: GraphQLString },
         first_name: { type: GraphQLString },
         email: { type: GraphQLString },
         gender: { type: GraphQLString },
@@ -29,14 +30,13 @@ const mutation = new GraphQLObjectType({
         about: { type: GraphQLString },
         address: { type: GraphQLString },
       },
-      async resolve(parent, args, req) {
+      async resolve(parent, args) {
         console.log(args.first_name);
         console.log(args.gender);
-        if (!req.user) throw new Error("Unauthenticated user");
-        console.log("User Id :::: ", req.user.user_id);
-
-        return await usersDb.findByIdAndUpdate(
-          req.user.user_id,
+        // if (!req.user) throw new Error("Unauthenticated user");
+        console.log("User Id :::: ", args.user_id);
+        await usersDb.findByIdAndUpdate(
+          args.user_id,
           {
             first_name: args.first_name,
             email: args.email,
@@ -52,11 +52,13 @@ const mutation = new GraphQLObjectType({
           //     new: true,
           //   }
         );
+        return args;
       },
     },
     insertIntoShop: {
       type: Items,
       args: {
+        user_id: { type: GraphQLString },
         item_name: { type: GraphQLString },
         item_price: { type: GraphQLString },
         item_category: { type: GraphQLString },
@@ -65,7 +67,7 @@ const mutation = new GraphQLObjectType({
         item_quantity: { type: GraphQLInt },
         user: { type: GraphQLString },
       },
-      async resolve(parent, args, req) {
+      async resolve(parent, args) {
         return await itemsDb.create({
           item_name: args.item_name,
           item_price: args.item_price,
@@ -73,13 +75,14 @@ const mutation = new GraphQLObjectType({
           item_desc: args.item_desc,
           item_image: args.item_image,
           item_quantity: args.item_quantity,
-          user: req.user.user_id,
+          user: args.user_id,
         });
       },
     },
     editShopItem: {
       type: Items,
       args: {
+        user_id: { type: GraphQLString },
         item_id: { type: GraphQLString },
         item_name: { type: GraphQLString },
         item_price: { type: GraphQLString },
@@ -89,7 +92,7 @@ const mutation = new GraphQLObjectType({
         item_quantity: { type: GraphQLInt },
         user: { type: GraphQLString },
       },
-      async resolve(parent, args, req) {
+      async resolve(parent, args) {
         return await itemsDb.findByIdAndUpdate(
           mongoose.Types.ObjectId(args._id),
           {
@@ -99,7 +102,7 @@ const mutation = new GraphQLObjectType({
             item_desc: args.item_desc,
             item_image: args.item_image,
             item_quantity: args.item_quantity,
-            user: req.user.user_id,
+            user: args.user_id,
           },
           {
             new: true,
@@ -110,12 +113,13 @@ const mutation = new GraphQLObjectType({
     createShop: {
       type: User,
       args: {
+        user_id: { type: GraphQLString },
         shop_name: { type: GraphQLString },
       },
-      async resolve(parent, args, req) {
-        console.log("Inside Create Shop", req.user.user_id);
+      async resolve(parent, args) {
+        console.log("Inside Create Shop", args.user_id);
         const doc = await usersDb.findByIdAndUpdate(
-          req.user.user_id,
+          args.user_id,
           {
             shop_name: args.shop_name,
           },
@@ -129,10 +133,11 @@ const mutation = new GraphQLObjectType({
     addItemToCart: {
       type: Cart,
       args: {
+        user_id: { type: GraphQLString },
         item_id: { type: GraphQLString },
         quantity: { type: GraphQLInt },
       },
-      async resolve(parent, args, req) {
+      async resolve(parent, args) {
         console.log("add to the cart");
         const documents = await cartDb.find(
           {
@@ -147,7 +152,7 @@ const mutation = new GraphQLObjectType({
           const doc = await cartDb.create(
             {
               item: mongoose.Types.ObjectId(args.item_id),
-              user: mongoose.Types.ObjectId(req.user.user_id),
+              user: mongoose.Types.ObjectId(args.user_id),
               quantity: args.quantity,
             },
             {
@@ -162,9 +167,9 @@ const mutation = new GraphQLObjectType({
     },
     deleteCartItems: {
       type: Cart,
-      async resolve(parent, args, req) {
+      async resolve(parent, args) {
         let deletedCart = await cartDb.deleteMany({
-          user: mongoose.Types.ObjectId(req.user.user_id),
+          user: mongoose.Types.ObjectId(args.user_id),
         });
         return deletedCart;
       },
