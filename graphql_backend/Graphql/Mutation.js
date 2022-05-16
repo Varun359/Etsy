@@ -1,4 +1,4 @@
-const { Customer, Items, User } = require("./TypeDef");
+const { Cart, Items, User } = require("./TypeDef");
 const UserController = require("../controllers/userController");
 const {
   GraphQLSchema,
@@ -11,6 +11,7 @@ const {
 const checkAuth = require("../middlewares/auth");
 const usersDb = require("../models/userModel.js");
 const itemsDb = require("../models/itemModel.js");
+const cartDb = require("../models/cartModel.js");
 const { default: mongoose } = require("mongoose");
 const mutation = new GraphQLObjectType({
   name: "mutation",
@@ -123,6 +124,49 @@ const mutation = new GraphQLObjectType({
           }
         );
         return doc;
+      },
+    },
+    addItemToCart: {
+      type: Cart,
+      args: {
+        item_id: { type: GraphQLString },
+        quantity: { type: GraphQLInt },
+      },
+      async resolve(parent, args, req) {
+        console.log("add to the cart");
+        const documents = await cartDb.find(
+          {
+            item: mongoose.Types.ObjectId(args.item_id),
+          },
+          {
+            new: true,
+          }
+        );
+        console.log("document length", documents.length);
+        if (documents.length === 0) {
+          const doc = await cartDb.create(
+            {
+              item: mongoose.Types.ObjectId(args.item_id),
+              user: mongoose.Types.ObjectId(req.user.user_id),
+              quantity: args.quantity,
+            },
+            {
+              new: true,
+            }
+          );
+          console.log("Creating return", doc);
+        }
+        console.log(documents[0]);
+        return documents;
+      },
+    },
+    deleteCartItems: {
+      type: Cart,
+      async resolve(parent, args, req) {
+        let deletedCart = await cartDb.deleteMany({
+          user: mongoose.Types.ObjectId(req.user.user_id),
+        });
+        return deletedCart;
       },
     },
   },
