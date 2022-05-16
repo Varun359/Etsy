@@ -65,7 +65,6 @@ const mutation = new GraphQLObjectType({
         item_desc: { type: GraphQLString },
         item_image: { type: GraphQLString },
         item_quantity: { type: GraphQLInt },
-        user: { type: GraphQLString },
       },
       async resolve(parent, args) {
         return await itemsDb.create({

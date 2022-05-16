@@ -78,6 +78,7 @@ export const CREATE_SHOP = gql`
 
 export const INSERT_INTO_SHOP = gql`
   mutation insertIntoShop(
+    $user_id: String
     $item_name: String
     $item_price: String
     $item_category: String
@@ -86,6 +87,7 @@ export const INSERT_INTO_SHOP = gql`
     $item_image: String
   ) {
     insertIntoShop(
+      user_id: $user_id
       item_name: $user_id
       item_price: $item_price
       item_category: $item_category
