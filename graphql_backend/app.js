@@ -5,12 +5,37 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const multerS3 = require("multer-s3");
 const aws = require("aws-sdk");
+const checkAuth = require("./middlewares/auth");
+var cors = require("cors");
+
 //const errorMiddleware = require("./middlewares/error");
+
 const app = express();
 app.use(express.json());
+app.use(function (req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,HEAD,OPTIONS,POST,PUT,DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"
+  );
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type",
+    "Authorization"
+  );
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 var session = require("express-session");
-var cors = require("cors");
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use("/profile", express.static("uploads/images"));
@@ -25,6 +50,20 @@ app.use(
     activeDuration: 5 * 60 * 1000,
   })
 );
+
+// app.use(checkAuth);
+
+const { query } = require("./Graphql/Query");
+const { mutation } = require("./Graphql/Mutation");
+
+//graphql
+const { graphqlHTTP } = require("express-graphql");
+const { GraphQLSchema } = require("graphql");
+const schema = new GraphQLSchema({
+  query: query,
+  mutation: mutation,
+});
+app.use("/graphql", graphqlHTTP({ schema, graphiql: true }));
 
 app.use("/uploads", express.static("./uploads"));
 /*if (process.env.NODE_ENV !== "production") {

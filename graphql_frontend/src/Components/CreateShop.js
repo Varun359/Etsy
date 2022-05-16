@@ -24,7 +24,7 @@ function CreateShop() {
     console.log("hii");
     axios
       .post(
-        `${BASE_URL}/checkShopName`,
+        `${BASE_URL}/checkShop`,
         { shop_name: shopName },
         {
           headers: {
