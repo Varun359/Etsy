@@ -85,3 +85,25 @@ export const GET_CART_ITEMS = gql`
     }
   }
 `;
+
+export const GET_PREVIOUS_ORDERS = gql`
+  query getPreviousOrders($user_id: String) {
+    getPreviousOrders(user_id: $user_id) {
+      item {
+        _id
+      }
+      user {
+        _id
+      }
+      order {
+        date
+      }
+      quantity_buyed
+      price_buyed
+      item_name
+      item_image
+      shop_name
+      gift
+    }
+  }
+`;
