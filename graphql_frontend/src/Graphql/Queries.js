@@ -44,8 +44,8 @@ export const CHECK_SHOP_NAME = gql`
 `;
 
 export const GET_SHOP_DETAILS = gql`
-  query {
-    getShopDetails {
+  query getShopDetails($user_id: String) {
+    getShopDetails(user_id: $user_id) {
       shop_name
       shop_image
       user_image
@@ -104,6 +104,42 @@ export const GET_PREVIOUS_ORDERS = gql`
       item_image
       shop_name
       gift
+    }
+  }
+`;
+
+export const GET_SHOP_ITEMS = gql`
+  query getShopItems($user_id: String) {
+    getShopItems(user_id: $user_id) {
+      user {
+        first_name
+        shop_name
+        shop_image
+      }
+      item_name
+      item_category
+      item_price
+      item_desc
+      item_quantity
+      item_image
+    }
+  }
+`;
+
+export const GET_SHOP_ITEMSBYID = gql`
+  query getShopItemsById($user_id: String) {
+    getShopItemsById(user_id: $user_id) {
+      user {
+        first_name
+        shop_name
+        shop_image
+      }
+      item_name
+      item_category
+      item_price
+      item_desc
+      item_quantity
+      item_image
     }
   }
 `;
