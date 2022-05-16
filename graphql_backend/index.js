@@ -26,8 +26,8 @@ app.use(cors());
 
 connection();
 
-app.listen(3001, () => {
-  console.log("App listening on port 3001");
+app.listen(3002, () => {
+  console.log("App listening on port 3002");
   // connection.connect(function (err) {
   //   if (err) throw err;
   //   console.log("database connected");
