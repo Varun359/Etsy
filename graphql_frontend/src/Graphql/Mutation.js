@@ -54,3 +54,11 @@ export const DELETE_CART_ITEMS = gql`
     }
   }
 `;
+
+export const CREATE_SHOP = gql`
+  mutation createShop($shop_name: String!) {
+    createShop(shop_name: $shop_name) {
+      shop_name
+    }
+  }
+`;
