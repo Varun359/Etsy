@@ -36,8 +36,8 @@ export const LOAD_ITEMS = gql`
 `;
 
 export const CHECK_SHOP_NAME = gql`
-  query checkShopName($shop_name: String) {
-    checkShopName(shop_name: $shop_name) {
+  query checkShopName($user_id: String, $shop_name: String) {
+    checkShopName(user_id: $user_id, shop_name: $shop_name) {
       shop_name
     }
   }
@@ -59,6 +59,7 @@ export const GET_SHOP_DETAILSBYID = gql`
       shop_name
       shop_image
       user_image
+      _id
     }
   }
 `;

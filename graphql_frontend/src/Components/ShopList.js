@@ -2,12 +2,30 @@ import React, { useEffect, useState } from "react";
 // import DashBoardItem from "./DashBoardItem";
 import axios from "axios";
 import ShopItem from "./ShopItem";
-import { BASE_URL } from "../variables";
+import { BASE_URL, GRAPHQL_BASE_URL } from "../variables";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { GET_SHOP_DETAILS, GET_SHOP_DETAILSBYID } from "../Graphql/Queries";
 function ShopList({ owner, user_id }) {
   const [cookie, setCookie] = useState(undefined);
   const [shopList, setShopList] = useState([]);
   const [refresh, setRefresh] = useState(false);
+  const user_local = JSON.parse(localStorage.getItem("user"));
+
+  const [shopName, setShopName] = useState();
+  const userId = user_local.user_id;
+  const { error, loading, data } = useQuery(GET_SHOP_DETAILSBYID, {
+    variables: { user_id: userId },
+  });
   useEffect(() => {
+    console.log("Data get user details data", data);
+
+    if (data != undefined) {
+      console.log(
+        "Data get user details data",
+        data.getShopDetailsById.shop_name
+      );
+      setShopName(data.getShopDetailsById.shop_name);
+    }
     var cookies = decodeURIComponent(document.cookie).split(";");
     cookies.forEach((cookieEle) => {
       console.log(cookieEle);
@@ -31,6 +49,7 @@ function ShopList({ owner, user_id }) {
           console.log(response.data);
           // setShopList(response.data);
           var displayShopList = response.data.map((item) => {
+            console.log("Item is ", item);
             var ImageSrc =
               item.item_image === null
                 ? `${BASE_URL}/images/item_image.avif`
@@ -57,7 +76,7 @@ function ShopList({ owner, user_id }) {
         .catch((err) => {
           console.log(err);
         });
-  }, [refresh]);
+  }, [refresh, data]);
   return <div className="shopList__container">{shopList}</div>;
 }
 

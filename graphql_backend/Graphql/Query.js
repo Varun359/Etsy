@@ -61,7 +61,8 @@ const query = new GraphQLObjectType({
           .findOne({ shop_name: args.shop_name })
           .count();
         console.log(shopAvailability);
-        if (shopAvailability !== 0) throw new Error("shop name already exists");
+        if (shopAvailability !== 0) args.shop_name = "exist";
+        //throw new Error("shop name already exists");
         return args;
       },
     },

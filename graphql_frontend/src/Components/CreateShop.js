@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { Navigate } from "react-router";
 import "./css/CreateShop.css";
@@ -11,6 +11,7 @@ import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 import { activeShop, selectUser, updateUserShop } from "../features/userSlice";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { CREATE_SHOP } from "../Graphql/Mutation";
+import { CHECK_SHOP_NAME } from "../Graphql/Queries";
 function CreateShop() {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
@@ -22,6 +23,10 @@ function CreateShop() {
   const [cookie, setCookie] = useCookies(["cookie"]);
   const [isCreated, setIsCreated] = useState(false);
   const navigate = useNavigate();
+
+  const { error, loading, data } = useQuery(CHECK_SHOP_NAME, {
+    variables: { user_id: userId, shop_name: shopName },
+  });
   const [createUserShop] = useMutation(CREATE_SHOP, {
     onCompleted(res) {
       console.log(res);
@@ -32,29 +37,34 @@ function CreateShop() {
   });
   const checkShop = () => {
     console.log("hii");
-    axios
-      .post(
-        `${BASE_URL}/checkShop`,
-        { shop_name: shopName },
-        {
-          headers: {
-            "content-Type": "application/json",
-            "auth-token": cookie.cookie.token,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response.data);
-        if (response.status === 200 && !response.data) {
-          console.log(response.data);
-          setCheckAvailable(true);
-        }
-        setShowAlert(true);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+
+    console.log("The data of graph ql", data);
+    if (data.checkShopName.shop_name !== "exist") {
+      console.log(data.checkShopName.shop_name);
+      setCheckAvailable(true);
+    }
+    setShowAlert(true);
+    // axios
+    //   .post(
+    //     `${BASE_URL}/checkShop`,
+    //     { shop_name: shopName },
+    //     {
+    //       headers: {
+    //         "content-Type": "application/json",
+    //         "auth-token": cookie.cookie.token,
+    //       },
+    //     }
+    //   )
+    // .then((response) => {
+
+    //   })
+    // .catch((err) => {
+    //   console.log(err);
+    // });
   };
+  useEffect(() => {
+    console.log("The data in create shop use effect from graphql", data);
+  }, [data]);
 
   const createShop = () => {
     //  axios

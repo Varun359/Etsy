@@ -6,6 +6,8 @@ import axios from "axios";
 import { useCookies, CookiesProvider } from "react-cookie";
 import { BASE_URL } from "../variables";
 import { s3 } from "./configure";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { GET_SHOP_DETAILS, GET_SHOP_DETAILSBYID } from "../Graphql/Queries";
 
 function ShopBanner({ sales = 0, owner, user_id }) {
   const navigate = useNavigate();
@@ -18,38 +20,49 @@ function ShopBanner({ sales = 0, owner, user_id }) {
   const [shopImage, setShopImage] = useState(
     `${BASE_URL}/images/shop_default.png`
   );
+  const user_local = JSON.parse(localStorage.getItem("user"));
+
+  const userId = user_local.user_id;
+  const { error, loading, data } = useQuery(GET_SHOP_DETAILSBYID, {
+    variables: { user_id: userId },
+  });
 
   useEffect(() => {
+    if (data != undefined) {
+      console.log("Data", data.getShopDetailsById);
+    }
     let user = JSON.parse(localStorage.getItem("user"));
     // setName(user.first_name);
     // setShopName(user.shop_name);
-    axios
-      .get(`${BASE_URL}/shopDetailsById/` + user_id, {
-        headers: {
-          "content-Type": "application/json",
-          "auth-token": cookie.cookie.token,
-        },
-      })
-      .then((response) => {
-        console.log("Status Code : ", response.status);
-        if (response.status === 200) {
-          // console.log(response.data, response.data[0].first_name);
-          setName(response.data[0].first_name);
-          setShopName(response.data[0].shop_name);
-          console.log("response in shopbanner", response.data);
-          if (response.data[0].shop_image != null)
-            setShopImage(response.data[0].shop_image);
-          if (response.data[0].user_image != null)
-            setProfileImg(response.data[0].user_image);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // axios
+    //   .get(`${BASE_URL}/shopDetailsById/` + user_id, {
+    //     headers: {
+    //       "content-Type": "application/json",
+    //       "auth-token": cookie.cookie.token,
+    //     },
+    //   })
+    // .then((response) => {
+    // console.log("Status Code : ", response.status);
+    // if (response.status === 200) {
+    // console.log(response.data, response.data[0].first_name);
+    if (data != undefined) {
+      setName(data.getShopDetailsById.first_name);
+      setShopName(data.getShopDetailsById.shop_name);
+      //console.log("response in shopbanner", response.data);
+      if (data.getShopDetailsById.shop_image != null)
+        setShopImage(data.getShopDetailsById.shop_image);
+      if (data.getShopDetailsById.user_image != null)
+        setProfileImg(data.getShopDetailsById.user_image);
+    }
+    // }
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // });
 
     // setProfileImg(user.user_image);
     // setShopImage(user.shop_image);
-  }, []);
+  }, [data]);
 
   const changeImage = async (data) => {
     console.log(data);
