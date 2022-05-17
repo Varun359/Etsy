@@ -90,11 +90,11 @@ const mutation = new GraphQLObjectType({
         item_desc: { type: GraphQLString },
         item_image: { type: GraphQLString },
         item_quantity: { type: GraphQLInt },
-        user: { type: GraphQLString },
       },
       async resolve(parent, args) {
+        console.log("Shop Items Edited");
         return await itemsDb.findByIdAndUpdate(
-          mongoose.Types.ObjectId(args._id),
+          mongoose.Types.ObjectId(args.item_id),
           {
             item_name: args.item_name,
             item_price: args.item_price,

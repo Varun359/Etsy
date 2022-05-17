@@ -117,7 +117,7 @@ export const EDIT_SHOP_ITEM = gql`
   ) {
     editShopItem(
       item_id: $item_id
-      item_name: $user_id
+      item_name: $item_name
       item_price: $item_price
       item_category: $item_category
       item_desc: $item_desc

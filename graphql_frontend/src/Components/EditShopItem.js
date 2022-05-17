@@ -6,6 +6,8 @@ import { useCookies, CookiesProvider } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../variables";
 import { s3 } from "./configure";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { EDIT_SHOP_ITEM } from "../Graphql/Mutation";
 
 function EditShopItem({ closeModal, setLoginStatus, item }) {
   const [itemName, setItemName] = useState("");
@@ -22,6 +24,16 @@ function EditShopItem({ closeModal, setLoginStatus, item }) {
     console.log(value);
     setterFunc(value);
   };
+
+  const [editShopItem] = useMutation(EDIT_SHOP_ITEM, {
+    onCompleted(res) {
+      console.log(res);
+    },
+    onError(e) {
+      console.log(e.message);
+    },
+  });
+
   useEffect(() => {
     console.log(item);
     setItemName(item.item_name);
@@ -81,20 +93,35 @@ function EditShopItem({ closeModal, setLoginStatus, item }) {
       item_image: itemImage,
     };
     console.log(data);
-    console.log(`${BASE_URL}/editShopItem/${item._id}`);
-    axios
-      .post(`${BASE_URL}/editShopItem/${item._id}`, data, {
-        headers: {
-          "content-Type": "application/json",
-          "auth-token": cookie.cookie.token,
-        },
-      })
+    const user_local = JSON.parse(localStorage.getItem("user"));
+    const userId = user_local.user_id;
+    console.log(data);
+    // console.log(`${BASE_URL}/editShopItem/${item._id}`);
+    // axios
+    //   .post(`${BASE_URL}/editShopItem/${item._id}`, data, {
+    //     headers: {
+    //       "content-Type": "application/json",
+    //       "auth-token": cookie.cookie.token,
+    //     },
+    //   })
+    editShopItem({
+      variables: {
+        item_id: data._id,
+        item_name: itemName,
+        item_category: category,
+        item_desc: itemDesc,
+        item_price: price.toString(),
+        item_quantity: Number(quantity),
+        item_image: itemImage,
+      },
+    })
       .then((response) => {
-        console.log("Status Code : ", response.status);
-        if (response.status === 200) {
+        // console.log("Status Code : ", response.status);
+        if (response) {
           console.log(response);
           setUpdated(true);
-          navigate("/shop/" + user.user_id);
+          //console.log("User id ", userId);
+          navigate("/shop/" + userId);
         }
         closeModal();
       })
@@ -108,6 +135,7 @@ function EditShopItem({ closeModal, setLoginStatus, item }) {
         <form
           onSubmit={(e) => {
             submitForm();
+            // e.preventDefault();
           }}
         >
           <div class="modal-content">
@@ -221,6 +249,7 @@ function EditShopItem({ closeModal, setLoginStatus, item }) {
                   class="form-control"
                   id="price"
                   min={1}
+                  type="text"
                 />
               </div>
               <div class="form-group">
