@@ -5,12 +5,23 @@ import { Navigate } from "react-router-dom";
 import { BASE_URL, GRAPHQL_BASE_URL } from "../variables";
 import { useDispatch } from "react-redux";
 import { register } from "../features/userSlice";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { REGISTER } from "../Graphql/Mutation";
 let registerData = {};
 function Register({ handleTriggerRefresh, closeModal, closeSignIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [first_name, setFirstName] = useState("");
   const [created, setCreated] = useState(null);
+
+  const [user_register] = useMutation(REGISTER, {
+    onCompleted(res) {
+      console.log(res);
+    },
+    onError(e) {
+      console.log(e.message);
+    },
+  });
 
   const emailChangeHandler = (e) => {
     setEmail(e.target.value);
@@ -40,12 +51,19 @@ function Register({ handleTriggerRefresh, closeModal, closeSignIn }) {
       first_name: first_name,
       password: password,
     };
+    console.log("The data for sending to graphql", data);
     e.preventDefault();
-    axios.defaults.withCredentials = true;
-    axios
-      .post(`${GRAPHQL_BASE_URL}/register`, data)
+    // axios.defaults.withCredentials = true;
+    // axios.post(`${GRAPHQL_BASE_URL}/register`, data);
+    user_register({
+      variables: {
+        email: data.email,
+        first_name: data.first_name,
+        password: data.password,
+      },
+    })
       .then((response) => {
-        if (response.status === 200) {
+        if (response) {
           console.log(response);
 
           const data = {
@@ -55,24 +73,24 @@ function Register({ handleTriggerRefresh, closeModal, closeSignIn }) {
           registerData = data;
           console.log("data", data);
 
-          axios
-            .post(`${GRAPHQL_BASE_URL}/login`, registerData)
-            .then((response) => {
-              console.log("Status Code : ", response.status);
-              if (response.status === 200) {
-                localStorage.setItem("user", JSON.stringify(response.data));
-                if (!response.data.shop_name) {
-                  axios
-                    .post(`${GRAPHQL_BASE_URL}/login`, registerData)
-                    .then((response) => {
-                      handleTriggerRefresh();
-                    });
-                }
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          // axios
+          //   .post(`${GRAPHQL_BASE_URL}/login`, registerData)
+          //   .then((response) => {
+          //     console.log("Status Code : ", response.status);
+          //     if (response.status === 200) {
+          //       localStorage.setItem("user", JSON.stringify(response.data));
+          //       if (!response.data.shop_name) {
+          //         axios
+          //           .post(`${GRAPHQL_BASE_URL}/login`, registerData)
+          //           .then((response) => {
+          //             handleTriggerRefresh();
+          //           });
+          //       }
+          //     }
+          //   })
+          //   .catch((err) => {
+          //     console.log(err);
+          //   });
           setEmail("");
           setPassword("");
           setFirstName("");
