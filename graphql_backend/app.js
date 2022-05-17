@@ -7,11 +7,13 @@ const multerS3 = require("multer-s3");
 const aws = require("aws-sdk");
 const checkAuth = require("./middlewares/auth");
 var cors = require("cors");
+const morgan = require("morgan");
 
 //const errorMiddleware = require("./middlewares/error");
 
 const app = express();
 app.use(express.json());
+app.use(morgan("short"));
 app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   res.setHeader("Access-Control-Allow-Credentials", "true");
