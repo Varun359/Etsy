@@ -118,6 +118,7 @@ const mutation = new GraphQLObjectType({
       },
       async resolve(parent, args) {
         console.log("Inside Create Shop", args.user_id);
+        console.log("User shop successfully created");
         const doc = await usersDb.findByIdAndUpdate(
           args.user_id,
           {

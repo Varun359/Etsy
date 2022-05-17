@@ -69,8 +69,8 @@ export const DELETE_ITEMS_FROM_CART = gql`
 `;
 
 export const CREATE_SHOP = gql`
-  mutation createShop($shop_name: String!) {
-    createShop(shop_name: $shop_name) {
+  mutation createShop($user_id: String, $shop_name: String!) {
+    createShop(user_id: $user_id, shop_name: $shop_name) {
       shop_name
     }
   }

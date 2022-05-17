@@ -9,17 +9,27 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
 import { BASE_URL, KAFKA_BASE_URL } from "../variables";
 import { activeShop, selectUser, updateUserShop } from "../features/userSlice";
-
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { CREATE_SHOP } from "../Graphql/Mutation";
 function CreateShop() {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
-
+  const user_local = JSON.parse(localStorage.getItem("user"));
+  const userId = user_local.user_id;
   const [shopName, setShopName] = useState("");
   const [checkAvailable, setCheckAvailable] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [cookie, setCookie] = useCookies(["cookie"]);
   const [isCreated, setIsCreated] = useState(false);
   const navigate = useNavigate();
+  const [createUserShop] = useMutation(CREATE_SHOP, {
+    onCompleted(res) {
+      console.log(res);
+    },
+    onError(e) {
+      console.log(e.message);
+    },
+  });
   const checkShop = () => {
     console.log("hii");
     axios
@@ -47,19 +57,26 @@ function CreateShop() {
   };
 
   const createShop = () => {
-    axios
-      .post(
-        `${BASE_URL}/createShop`,
-        { shop_name: shopName },
-        {
-          headers: {
-            "content-Type": "application/json",
-            "auth-token": cookie.cookie.token,
-          },
-        }
-      )
+    //  axios
+    //   .post(
+    //     `${BASE_URL}/createShop`,
+    //     { shop_name: shopName },
+    //     {
+    //       headers: {
+    //         "content-Type": "application/json",
+    //         "auth-token": cookie.cookie.token,
+    //       },
+    //     }
+    //   )
+    console.log("User id is ", userId);
+    createUserShop({
+      variables: {
+        user_id: userId,
+        shop_name: shopName,
+      },
+    })
       .then((response) => {
-        if (response.status === 200) {
+        if (response) {
           setIsCreated(true);
         }
         dispatch(
