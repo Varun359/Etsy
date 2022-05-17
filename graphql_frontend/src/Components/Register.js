@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Cancel } from "@material-ui/icons";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
-import { BASE_URL } from "../variables";
+import { BASE_URL, GRAPHQL_BASE_URL } from "../variables";
 import { useDispatch } from "react-redux";
 import { register } from "../features/userSlice";
 let registerData = {};
@@ -43,7 +43,7 @@ function Register({ handleTriggerRefresh, closeModal, closeSignIn }) {
     e.preventDefault();
     axios.defaults.withCredentials = true;
     axios
-      .post(`${BASE_URL}/register`, data)
+      .post(`${GRAPHQL_BASE_URL}/register`, data)
       .then((response) => {
         if (response.status === 200) {
           console.log(response);
@@ -56,14 +56,14 @@ function Register({ handleTriggerRefresh, closeModal, closeSignIn }) {
           console.log("data", data);
 
           axios
-            .post(`${BASE_URL}/login`, registerData)
+            .post(`${GRAPHQL_BASE_URL}/login`, registerData)
             .then((response) => {
               console.log("Status Code : ", response.status);
               if (response.status === 200) {
                 localStorage.setItem("user", JSON.stringify(response.data));
                 if (!response.data.shop_name) {
                   axios
-                    .post(`${BASE_URL}/login`, registerData)
+                    .post(`${GRAPHQL_BASE_URL}/login`, registerData)
                     .then((response) => {
                       handleTriggerRefresh();
                     });

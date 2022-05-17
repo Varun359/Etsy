@@ -55,6 +55,23 @@ const mutation = new GraphQLObjectType({
         return args;
       },
     },
+    register: {
+      type: User,
+      args: {
+        first_name: { type: GraphQLString },
+        email: { type: GraphQLString },
+        password: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        const user = await usersDb.create({
+          first_name: args.first_name,
+          email: args.email,
+          password: args.password,
+        });
+        console.log("User created successfully");
+        return args;
+      },
+    },
     insertIntoShop: {
       type: Items,
       args: {
