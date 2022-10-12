@@ -71,8 +71,8 @@ const upload = multer({
 });
 
 const s3 = new aws.S3({
-  accessKeyId: "AKIAZSRVTBBNQHCHG6FK",
-  secretAccessKey: "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",
+  accessKeyId: "",
+  secretAccessKey: "",
   region: "us-west-1",
 });
 
