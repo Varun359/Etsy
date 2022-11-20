@@ -1,4 +1,5 @@
 # Etsy_lab2 Instructions
+
 1. Download the folder
 2. open Backend,frontend,k_backend,kafka_backend in four terminals
 3. type npm i on all the terminals
