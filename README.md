@@ -7,3 +7,4 @@
 5. type npm start in front end terminal
 6. type node index.js in k_backend terminal
 7. type node server.js in kafka_backend terminal
+8. Test the application
